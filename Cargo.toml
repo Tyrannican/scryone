@@ -1,0 +1,15 @@
+[package]
+name = "scryone"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.102"
+jiff = { version = "0.2.24", features = ["serde"] }
+reqwest = { version = "0.13.3", features = ["blocking", "json", "query"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.149"
+thiserror = "2.0.18"
+tokio = { version = "1.52.2", features = ["rt"] }
+url = { version = "2.5.8", features = ["serde"] }
+uuid = { version = "1.23.1", features = ["v4", "std", "serde"] }
