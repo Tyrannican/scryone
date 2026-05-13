@@ -1,3 +1,5 @@
+//! Types shared across all Scryfall objects
+
 use serde::{Deserialize, Serialize};
 
 use crate::objects::{list::List, set::Set};
@@ -579,19 +581,19 @@ impl std::fmt::Display for CardFinish {
 /// Several cards have older / modern card frames and some have prints in several frames
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum CardFrame {
-    /// The initial card frame released in 1993
+    /// The original card frame, starting from Limited Edition Alpha
     #[serde(rename = "1993")]
     Frame1993,
 
-    /// Updated card frame from 1997
+    /// Updaed calssic frame starting from the Mirage block
     #[serde(rename = "1997")]
     Frame1997,
 
-    /// Updated card frame from 2003
+    /// The "modern" card frame, introduced in Eighth Edition and Mirrodin block
     #[serde(rename = "2003")]
     Frame2003,
 
-    /// Updated card frame from 2015
+    /// The Holo-foil stamp card frame, introduced in Magic 2015
     #[serde(rename = "2015")]
     Frame2015,
 
@@ -612,33 +614,83 @@ impl std::fmt::Display for CardFrame {
     }
 }
 
+/// The frame artwork applied over a particular frame
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum FrameEffect {
+    /// Cards have a Legendary Crown
     Legendary,
+
+    /// Miracle Frame
     Miracle,
+
+    /// Enchantment Frame
     Enchantment,
+
+    /// Draft-matters Frame
     Draft,
+
+    /// Devoid Frame
     Devoid,
+
+    /// Odyssey tombstone mark
     Tombstone,
+
+    /// Colorshifted frame
     ColorShifted,
+
+    /// Predominantly inverted test
     Inverted,
+
+    /// Sun and Moon transform marks (Double-faced Card)
     SunMoonDfc,
+
+    /// Compass and Land transform marks (Double-faced Card)
     CompassLandDfc,
+
+    /// Origins and Planeswalker transform marks (Double-faced Card)
     OriginPwDfc,
+
+    /// Moon and Eldrazi transform marks (Double-faced Card)
     MoonEldraziDfc,
+
+    /// Waxing and Waning crescent moon transform marks (Double-faced Card)
     WaxingAndWaningMoonDfc,
+
+    /// Custom Showcase frame
     Showcase,
+
+    /// Extended art frame
     ExtendedArt,
+
+    /// Companion frame
     Companion,
+
+    /// Frame with the Etched foil treatment
     Etched,
+
+    /// Snowy effect frame
     Snow,
+
+    /// Lesson frame
     Lesson,
+
+    /// Shattered Glass frame
     ShatteredGlass,
+
+    /// More-than-meets-the-eye Frame
     ConvertDfc,
+
+    /// Fan transform marks (Double-faced Card)
     FanDfc,
+
+    /// Upside-down transform marks (Double-faced Card)
     UpsideDownDfc,
+
+    /// Spree asterisks on Frame
     Spree,
+
+    /// Full art frame
     FullArt,
 }
 
@@ -674,13 +726,23 @@ impl std::fmt::Display for FrameEffect {
     }
 }
 
+/// Supported game formats
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum GameType {
+    /// Paper Magic (i.e. physical printing)
     Paper,
+
+    /// Magic Arena
     Arena,
+
+    /// Magic: the Gathering - Online
     Mtgo,
+
+    /// Astral game
     Astral,
+
+    /// Sega...?
     Sega,
 }
 
@@ -696,14 +758,22 @@ impl std::fmt::Display for GameType {
     }
 }
 
+/// Status of an image for a card
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum ImageStatus {
+    /// The image is missing for a card
     #[serde(rename = "missing")]
     Missing,
+
+    /// The image is a placeholder for a card
     #[serde(rename = "placeholder")]
     Placeholder,
+
+    /// The image is Low Resolution for a card
     #[serde(rename = "lowres")]
     LowRes,
+
+    /// The image is a High Resolution scan of a card
     #[serde(rename = "highres_scan")]
     HighResScan,
 }
@@ -719,14 +789,26 @@ impl std::fmt::Display for ImageStatus {
     }
 }
 
+/// Card Rarities
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Rarity {
+    /// Common card (Black set symbol)
     Common,
+
+    /// Uncommon card (Blue set symbol)
     Uncommon,
+
+    /// Rare card (Gold set symbol)
     Rare,
+
+    /// Special card
     Special,
+
+    /// Mythic card (Orange set symbol)
     Mythic,
+
+    /// Bonus card
     Bonus,
 }
 
@@ -743,6 +825,7 @@ impl std::fmt::Display for Rarity {
     }
 }
 
+/// Supported languages for a card in Scryfall
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Language {
     #[serde(rename = "en")]
@@ -771,14 +854,20 @@ pub enum Language {
     Hebrew,
     #[serde(rename = "la")]
     Latin,
+
+    /// Ancient Greek is used on some Theros cards
     #[serde(rename = "grc")]
     AncientGreek,
     #[serde(rename = "ar")]
     Arabic,
     #[serde(rename = "sa")]
     Sanskrit,
+
+    /// Phyrexian is used on special Phyrexian-edition cards
     #[serde(rename = "ph")]
     Phyrexian,
+
+    /// Quenya (Elvish) is used on special Lord of the Rings and The Hobbit cards
     #[serde(rename = "qya")]
     Quenya,
 }
@@ -808,33 +897,83 @@ impl std::fmt::Display for Language {
     }
 }
 
+/// The arrangement of card parts, faces, and other bounded regions on cards
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Layout {
+    /// A standard Magic card with a single face
     Normal,
+
+    /// A split-faced card
     Split,
+
+    /// Card that invert vertically with the `flip` keyword
     Flip,
+
+    /// Double-sided card that transform
     Transform,
+
+    /// Double-sided card that can be played either-side
     ModalDfc,
+
+    /// Card with meld parts printed on the back
     Meld,
+
+    /// Card with the `Level-Up` mechanic
     Leveler,
+
+    /// Class-type enchantment card
     Class,
+
+    /// Case-type enchantment card
     Case,
+
+    /// Sage-type card
     Saga,
+
+    /// Card with an Adventure spell part
     Adventure,
+
+    /// Card with a prepared spell part
     Prepare,
+
+    /// Card with the `Mutate` mechanic
     Mutate,
+
+    /// Card with the `Prototype` mechanic
     Prototype,
+
+    /// Battle-type card
     Battle,
+
+    /// Plane and Phenomenon card
     Planar,
+
+    /// Scheme-type card
     Scheme,
+
+    /// Vanguard-type card
     Vanguard,
+
+    /// Token card
     Token,
+
+    /// Tokens with another token printed on the back
     DoubleFacedToken,
+
+    /// Emblem card
     Emblem,
+
+    /// Card with the `Augment` mechanic
     Augment,
+
+    /// Host-type card
     Host,
+
+    /// Art series collectable double-faced card
     ArtSeries,
+
+    /// Card with two sides that are unrelated
     Reversible,
 }
 
@@ -870,12 +1009,20 @@ impl std::fmt::Display for Layout {
     }
 }
 
+/// The role a [`super::RelatedCard`] plays
 #[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RelatedCardRole {
+    /// Card is a token
     Token,
+
+    /// Card is part of a Meld
     MeldPart,
+
+    /// Card is the result of a Meld
     MeldResult,
+
+    /// Card is part of a Combo
     ComboPiece,
 }
 
@@ -914,32 +1061,80 @@ impl std::fmt::Display for SecurityStamp {
     }
 }
 
+/// Exhaustive list of categorisations of a Magic Set
 #[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SetType {
+    /// Yearly core set (e.g. M20)
     Core,
+
+    /// Rotational expansion set in a block (Zendikar etc)
     Expansion,
+
+    /// Reprint set that contains no new cards (Modern Masters etc)
     Masters,
+
+    /// Set of new cards that only get added to high-power formats
     Eternal,
+
+    /// Arena set designed for the `Alchemy` format
     Alchemy,
+
+    /// Masterpiece Series premium foil cards
     Masterpiece,
+
+    /// Commander-oriented gift set
     Arsenal,
+
+    /// From the Vault gift set
     FromTheVault,
+
+    /// Spellbook series gift set
     Spellbook,
+
+    /// Premium Deck Series deck
     PremiumDeck,
+
+    /// Duel Deck
     DuelDeck,
+
+    /// Special draft set (Conspiracy, Battlebond etc)
     DraftInnovation,
+
+    /// Magic Online treasure chest prize set
     TreasureChest,
+
+    /// Commandper preconstructed deck
     Commander,
+
+    /// Planechase set
     Planechase,
+
+    /// Archenemy set
     Archenemy,
+
+    /// Vanguard set
     Vanguard,
+
+    /// Un-set or set with comical promos (Unglued, Unfinity etc)
     Funny,
+
+    /// Starter / introductory set (Portal etc)
     Starter,
+
+    /// Gift box set
     Box,
+
+    /// Set that contains purely promotional cards
     Promo,
+
+    /// Set made up of tokens and emblems
     Token,
+
+    /// Set made up of gold-bordered, oversize, or trophy cards that are not legal
     Memorabilia,
+
+    /// Set that contains minigame card inserts from booster packs
     Minigame,
 }
 
@@ -974,6 +1169,7 @@ impl std::fmt::Display for SetType {
     }
 }
 
+/// The Migration Plan types for Scryfall API Migration endpoints
 #[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum MigrationPlan {
@@ -990,10 +1186,14 @@ impl std::fmt::Display for MigrationPlan {
     }
 }
 
+/// The source of a provided ruling for a Card
 #[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum RulingSource {
+    /// Wizards of the Cost official ruling
     Wotc,
+
+    /// Scryfall ruling
     Scryfall,
 }
 
@@ -1006,14 +1206,24 @@ impl std::fmt::Display for RulingSource {
     }
 }
 
+/// Bulk Data type to request for Bulk Data calls to Scryfall API
 #[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum BulkDataType {
+    /// Only Oracle cards
     #[default]
     OracleCards,
+
+    /// Only cards with unique artworks
     UniqueArtwork,
+
+    /// Only default cards
     DefaultCards,
+
+    /// All cards in Scryfall
     AllCards,
+
+    /// Only the rulings for cards
     Rulings,
 }
 
@@ -1027,11 +1237,4 @@ impl std::fmt::Display for BulkDataType {
             Self::Rulings => write!(f, "rulings"),
         }
     }
-}
-
-#[derive(Debug, Clone, Deserialize)]
-#[serde(tag = "object", rename_all = "snake_case")]
-pub enum MultiVariant {
-    Set(Set),
-    List(List<Set>),
 }
