@@ -2,20 +2,37 @@ use serde::{Deserialize, Serialize};
 
 use crate::objects::{list::List, set::Set};
 
+/// Exhaustive representation of a Mana Color in Magic: the Gathering
+///
+/// The main colors are `WUBRGC` with `T` being present on a single card but is still represented
+/// here
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Color {
+    /// White Mana
     #[serde(rename = "W")]
     White,
+
+    /// Blue Mana
     #[serde(rename = "U")]
     Blue,
+
+    /// Black Mana
     #[serde(rename = "B")]
     Black,
+
+    /// Red Mana
     #[serde(rename = "R")]
     Red,
+
+    /// Green Mana
     #[serde(rename = "G")]
     Green,
+
+    /// Colorless Mana
     #[serde(rename = "C")]
     Colorless,
+
+    /// Tap Mana (part of an un-set)
     #[serde(rename = "T")]
     Tap,
 }
@@ -34,174 +51,344 @@ impl std::fmt::Display for Color {
     }
 }
 
+/// Exhaustive representation of a Mana Cost in Magic: the Gathering
+///
+/// All costs that are present in the game are represented by a combination of one or more of these
+/// symbols
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum CostSymbol {
+    /// Tap this Permanent
     #[serde(rename = "{T}")]
     Tap,
+
+    /// Untap this Permanent
     #[serde(rename = "{Q}")]
     Untap,
+
+    /// An Energy counter
     #[serde(rename = "{E}")]
     Energy,
+
+    /// Modal budget pawprint
     #[serde(rename = "{P}")]
     Pawprint,
+
+    /// Plansewalker
     #[serde(rename = "{PW}")]
     Planeswalker,
+
+    /// Chaos cost
     #[serde(rename = "{CHAOS}")]
     Chaos,
+
+    /// An Acorn counter
     #[serde(rename = "{A}")]
     Acorn,
+
+    /// A Ticket counter (part of Unfinity)
     #[serde(rename = "{TK}")]
     Ticket,
+
+    /// X Generic Mana cost
     #[serde(rename = "{X}")]
     XGeneric,
+
+    /// Y Generic Mana cost
     #[serde(rename = "{Y}")]
     YGeneric,
+
+    /// Z Generic Mana cost
     #[serde(rename = "{Z}")]
     ZGeneric,
+
+    /// 0 Generic Mana cost
     #[serde(rename = "{0}")]
     Zero,
+
+    /// ½ Generic Mana cost
     #[serde(rename = "{½}")]
     HalfGeneric,
+
+    /// 1 Generic Mana cost
     #[serde(rename = "{1}")]
     Generic,
+    /// 2 Generic Mana cost
     #[serde(rename = "{2}")]
     TwoGeneric,
+
+    /// 3 Generic Mana cost
     #[serde(rename = "{3}")]
     ThreeGeneric,
+
+    /// 4 Generic Mana cost
     #[serde(rename = "{4}")]
     FourGeneric,
+
+    /// 5 Generic Mana cost
     #[serde(rename = "{5}")]
     FiveGeneric,
+
+    /// 6 Generic Mana cost
     #[serde(rename = "{6}")]
     SixGeneric,
+
+    /// 7 Generic Mana cost
     #[serde(rename = "{7}")]
     SevenGeneric,
+
+    /// 8 Generic Mana cost
     #[serde(rename = "{8}")]
     EightGeneric,
+
+    /// 9 Generic Mana cost
     #[serde(rename = "{9}")]
     NineGeneric,
+
+    /// 10 Generic Mana cost
     #[serde(rename = "{10}")]
     TenGeneric,
+
+    /// 11 Generic Mana cost
     #[serde(rename = "{11}")]
     ElevenGeneric,
+
+    /// 12 Generic Mana cost
     #[serde(rename = "{12}")]
     TwelveGeneric,
+
+    /// 13 Generic Mana cost
     #[serde(rename = "{13}")]
     ThirteenGeneric,
+
+    /// 14 Generic Mana cost
     #[serde(rename = "{14}")]
     FourteenGeneric,
+
+    /// 15 Generic Mana cost
     #[serde(rename = "{15}")]
     FifteenGeneric,
+
+    /// 16 Generic Mana cost
     #[serde(rename = "{16}")]
-    SixteenGenric,
+    SixteenGeneric,
+
+    /// 17 Generic Mana cost
     #[serde(rename = "{17}")]
     SeventeenGeneric,
+
+    /// 18 Generic Mana cost
     #[serde(rename = "{18}")]
     EighteenGeneric,
+
+    /// 19 Generic Mana cost
     #[serde(rename = "{19}")]
     NineteenGeneric,
+
+    /// 20 Generic Mana cost
     #[serde(rename = "{20}")]
     TwentyGeneric,
+
+    /// 100 Generic Mana cost
     #[serde(rename = "{100}")]
     HundredGeneric,
+
+    /// 1000000 Generic Mana cost
     #[serde(rename = "{1000000}")]
     MillionGeneric,
+
+    /// ∞ Generic Mana cost
     #[serde(rename = "{∞}")]
     InfinityGeneric,
+
+    /// White or Blue Mana cost
     #[serde(rename = "{W/U}")]
     WhiteOrBlue,
+
+    /// White or Black Mana cost
     #[serde(rename = "{W/B}")]
     WhiteOrBlack,
+
+    /// Black or Red Mana cost
     #[serde(rename = "{B/R}")]
     BlackOrRed,
+
+    /// Black or Green Mana cost
     #[serde(rename = "{B/G}")]
     BlackOrGreen,
+
+    /// Blue or Black Mana cost
     #[serde(rename = "{U/B}")]
     BlueOrBlack,
+
+    /// Blue or Red Mana cost
     #[serde(rename = "{U/R}")]
     BlueOrRed,
+
+    /// Red or Green Mana cost
     #[serde(rename = "{R/G}")]
     RedOrGreen,
+
+    /// Red or White mana cost
     #[serde(rename = "{R/W}")]
     RedOrWhite,
+
+    /// Green or White Mana cost
     #[serde(rename = "{G/W}")]
     GreenOrWhite,
+
+    /// Green or Blue Mana cost
     #[serde(rename = "{G/U}")]
     GreenOrBlue,
+
+    /// Black or Green Mana cost or 2 Life
     #[serde(rename = "{B/G/P}")]
     BlackOrGreenPhyrexian,
+
+    /// Black or Red Mana cost or 2 Life
     #[serde(rename = "{B/R/P}")]
     BlackOrRedPhyrexian,
+
+    /// Green or Blue Mana cost or 2 Life
     #[serde(rename = "{G/U/P}")]
     GreenOrBluePhyrexian,
+
+    /// Green or White Mana cost or 2 Life
     #[serde(rename = "{G/W/P}")]
     GreenOrWhitePhyrexian,
+
+    /// Red or Green Mana cost or 2 Life
     #[serde(rename = "{R/G/P}")]
     RedOrGreenPhyrexian,
+
+    /// Red or White Mana cost or 2 Life
     #[serde(rename = "{R/W/P}")]
     RedOrWhitePhyrexian,
+
+    /// Blue or Black Mana cost or 2 Life
     #[serde(rename = "{U/B/P}")]
     BlueOrBlackPhyrexian,
+
+    /// Blue or Red Mana cost or 2 Life
     #[serde(rename = "{U/R/P}")]
     BlueOrRedPhyrexian,
+
+    /// White or Black Mana cost or 2 Life
     #[serde(rename = "{W/B/P}")]
     WhiteOrBlackPhyrexian,
+
+    /// White or Blue Mana cost or 2 Life
     #[serde(rename = "{W/U/P}")]
     WhiteOrBluePhyrexian,
+
+    /// Colorless or White Mana cost
     #[serde(rename = "{C/W}")]
     ColorlessOrWhite,
+
+    /// Colorless or Blue Mana cost
     #[serde(rename = "{C/U}")]
     ColorlessOrBlue,
+
+    /// Colorless or Black Mana cost
     #[serde(rename = "{C/B}")]
     ColorlessOrBlack,
+
+    /// Colorless or Red Mana cost
     #[serde(rename = "{C/R}")]
     ColorlessOrRed,
+
+    /// Colorless or Green Mana cost
     #[serde(rename = "{C/G}")]
     ColorlessOrGreen,
+
+    /// 2 Generic Mana or White Mana cost
     #[serde(rename = "{2/W}")]
     TwoGenericOrWhite,
+
+    /// 2 Generic Mana or Blue Mana cost
     #[serde(rename = "{2/U}")]
     TwoGenericOrBlue,
+
+    /// 2 Generic Mana or Black Mana cost
     #[serde(rename = "{2/B}")]
     TwoGenericOrBlack,
+
+    /// 2 Generic Mana or Red Mana cost
     #[serde(rename = "{2/R}")]
     TwoGenericOrRed,
+
+    /// 2 Generic Mana or Green Mana cost
     #[serde(rename = "{2/G}")]
     TwoGenericOrGreen,
+
+    /// 1 Colored Mana or 2 Life
     #[serde(rename = "{H}")]
     ColorOrPhyrexian,
+
+    /// White Mana cost or 2 Life
     #[serde(rename = "{W/P}")]
     WhiteOrPhyrexian,
+
+    /// Blue Mana cost or 2 Life
     #[serde(rename = "{U/P}")]
     BlueOrPhyrexian,
+
+    /// Black Mana cost or 2 Life
     #[serde(rename = "{B/P}")]
     BlackOrPhyrexian,
+
+    /// Red Mana cost or 2 Life
     #[serde(rename = "{R/P}")]
     RedOrPhyrexian,
+
+    /// Green Mana cost or 2 Life
     #[serde(rename = "{G/P}")]
     GreenOrPhyrexian,
+
+    /// Colorless Mana cost or 2 life
     #[serde(rename = "{C/P}")]
     ColorlessOrPhyrexian,
+
+    /// Half White Mana cost (unset)
     #[serde(rename = "{HW}")]
     HalfWhite,
+
+    /// Half Red Mana Cost (unset)
     #[serde(rename = "{HR}")]
     HalfRed,
+
+    /// White Mana cost
     #[serde(rename = "{W}")]
     White,
+
+    /// Blue Mana cost
     #[serde(rename = "{U}")]
     Blue,
+
+    /// Black Mana cost
     #[serde(rename = "{B}")]
     Black,
+
+    /// Red Mana cost
     #[serde(rename = "{R}")]
     Red,
+
+    /// Green Mana cost
     #[serde(rename = "{G}")]
     Green,
+
+    /// Colorless Mana cost
     #[serde(rename = "{C}")]
     Colorless,
+
+    /// Snow Mana cost
     #[serde(rename = "{S}")]
     Snow,
+
+    /// One Mana from a Legendary source
     #[serde(rename = "{L}")]
     Legendary,
+
+    /// One potential Land Drop
     #[serde(rename = "{D}")]
     LandDrop,
 }
@@ -237,7 +424,7 @@ impl std::fmt::Display for CostSymbol {
             Self::ThirteenGeneric => write!(f, "{{13}}"),
             Self::FourteenGeneric => write!(f, "{{14}}"),
             Self::FifteenGeneric => write!(f, "{{15}}"),
-            Self::SixteenGenric => write!(f, "{{16}}"),
+            Self::SixteenGeneric => write!(f, "{{16}}"),
             Self::SeventeenGeneric => write!(f, "{{17}}"),
             Self::EighteenGeneric => write!(f, "{{18}}"),
             Self::NineteenGeneric => write!(f, "{{19}}"),
@@ -297,12 +484,20 @@ impl std::fmt::Display for CostSymbol {
     }
 }
 
+/// The Legal status of a Card in relation to a Game Format
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum LegalStatus {
+    /// Legal in this format
     Legal,
+
+    /// Illegal in this format
     NotLegal,
+
+    /// Restricted to a single copy in this format
     Restricted,
+
+    /// Banned in this format
     Banned,
 }
 
@@ -317,14 +512,28 @@ impl std::fmt::Display for LegalStatus {
     }
 }
 
+/// The Border color of a Card
+///
+/// Some border formats are illegal in certain formats
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum BorderColor {
+    /// Black border
     Black,
+
+    /// White border
     White,
+
+    /// No border
     Borderless,
+
+    /// Yellow border
     Yellow,
+
+    /// Silver border
     Silver,
+
+    /// Gold border
     Gold,
 }
 
@@ -341,11 +550,17 @@ impl std::fmt::Display for BorderColor {
     }
 }
 
+/// The "finish" of a Card
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum CardFinish {
+    /// The Foil print (shiney)
     Foil,
+
+    /// The Standard print
     NonFoil,
+
+    /// The etched print
     Etched,
 }
 
@@ -359,16 +574,28 @@ impl std::fmt::Display for CardFinish {
     }
 }
 
+/// The card frame that can be present on a card
+///
+/// Several cards have older / modern card frames and some have prints in several frames
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum CardFrame {
+    /// The initial card frame released in 1993
     #[serde(rename = "1993")]
     Frame1993,
+
+    /// Updated card frame from 1997
     #[serde(rename = "1997")]
     Frame1997,
+
+    /// Updated card frame from 2003
     #[serde(rename = "2003")]
     Frame2003,
+
+    /// Updated card frame from 2015
     #[serde(rename = "2015")]
     Frame2015,
+
+    /// Futuresight card frame from the `Futuresight` set
     #[serde(rename = "future")]
     Future,
 }
