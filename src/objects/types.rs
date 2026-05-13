@@ -1037,6 +1037,7 @@ impl std::fmt::Display for RelatedCardRole {
     }
 }
 
+/// Type of holographic security stamp on a card
 #[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SecurityStamp {
