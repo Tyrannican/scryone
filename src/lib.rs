@@ -21,6 +21,9 @@ mod parse_test {
 
         let response = client.get(req)?;
         let cards: Result<Vec<Card>, ScryfallApiError> = client.call(response.download_uri);
+        if !cards.is_ok() {
+            eprintln!("{cards:?}");
+        }
         assert!(cards.is_ok());
         Ok(())
     }
