@@ -8,7 +8,7 @@ pub use request::{ScryfallPostRequest, ScryfallRequest};
 use reqwest::{Client, IntoUrl, StatusCode};
 use serde::de::DeserializeOwned;
 
-use crate::objects::error::ScryfallError;
+use crate::objects::{List, error::ScryfallError};
 
 const SCRYFALL_USER_AGENT: &str = "scryone-agent";
 const ACCEPT_HEADER: &str = "application/json;q=0.9,*/*;q=0.8";
@@ -37,6 +37,37 @@ impl ScryfallClient {
             .json::<T>()
             .await
             .map_err(|e| ScryfallApiError::ApiCall(e))
+    }
+
+    pub async fn paginated_request<T: DeserializeOwned + Clone>(
+        &self,
+        url: impl IntoUrl,
+    ) -> Result<Vec<T>, ScryfallApiError> {
+        let mut results: Vec<T> = Vec::new();
+        let mut url = url.into_url()?;
+        loop {
+            let list = self
+                .client
+                .get(url.clone())
+                .header("User-Agent", SCRYFALL_USER_AGENT)
+                .header("Accept", ACCEPT_HEADER)
+                .send()
+                .await?
+                .json::<List<T>>()
+                .await?;
+
+            results.extend_from_slice(&list.data);
+
+            if list.has_more {
+                url = list
+                    .next_page
+                    .expect("has_more is set so url should also be present");
+            } else {
+                break;
+            }
+        }
+
+        Ok(results)
     }
 
     pub async fn get<R: ScryfallRequest>(

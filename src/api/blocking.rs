@@ -27,6 +27,13 @@ impl ScryfallClient {
         self.rt.block_on(self.inner.call(url))
     }
 
+    pub fn paginated_request<T: DeserializeOwned + Clone>(
+        &self,
+        url: impl IntoUrl,
+    ) -> Result<Vec<T>, ScryfallApiError> {
+        self.rt.block_on(self.inner.paginated_request(url))
+    }
+
     pub fn get<R: ScryfallRequest>(&self, request: R) -> Result<R::Response, ScryfallApiError> {
         self.rt.block_on(self.inner.get(request))
     }
