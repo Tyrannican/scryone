@@ -1,6 +1,7 @@
 pub mod bulk;
 pub mod card;
 pub mod catalog;
+pub mod cost;
 pub mod error;
 pub mod list;
 pub mod migration;
@@ -12,6 +13,7 @@ pub mod types;
 pub use bulk::*;
 pub use card::*;
 pub use catalog::*;
+pub use cost::*;
 pub use error::*;
 pub use list::*;
 pub use migration::*;

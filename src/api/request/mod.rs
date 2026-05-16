@@ -7,12 +7,14 @@ pub mod card;
 pub mod catalog;
 pub mod ruling;
 pub mod set;
+pub mod symbology;
 
 pub use bulk::*;
 pub use card::*;
 pub use catalog::*;
 pub use ruling::*;
 pub use set::*;
+pub use symbology::*;
 
 pub(crate) const BASE_URL: &str = "https://api.scryfall.com";
 
