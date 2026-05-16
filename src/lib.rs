@@ -1,8 +1,6 @@
 pub mod api;
 pub mod objects;
 
-/// TODO: Migration API Request
-
 #[cfg(test)]
 mod parse_test {
     use super::*;
