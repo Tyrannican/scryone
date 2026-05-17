@@ -1,3 +1,4 @@
+//! Scryfall API Client
 pub mod blocking;
 pub mod error;
 pub mod request;

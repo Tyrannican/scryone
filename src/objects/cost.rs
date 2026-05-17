@@ -12,6 +12,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::objects::Color;
 
+/// Representation of a "cost" for a Magic card
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ManaCost {
     /// Content type for the object, always `mana_cost`

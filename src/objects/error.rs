@@ -8,6 +8,7 @@
 
 use serde::{Deserialize, Serialize};
 
+/// Error objects returned to the user when an error occurs with Scryfall
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ScryfallError {
     /// Content type for the object, always `error`

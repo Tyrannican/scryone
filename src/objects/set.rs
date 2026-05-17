@@ -13,6 +13,7 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 use uuid::Uuid;
 
+/// Representation of a collection of Magic cards
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Set {
     /// Content type for the object, always `set`

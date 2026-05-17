@@ -17,6 +17,7 @@ use jiff::civil::Date;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+/// Representation of a Magic Card's Ruling text
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Ruling {
     /// Content type for the object, always `ruling`

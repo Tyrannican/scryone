@@ -10,6 +10,7 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+/// List of objects requested from Scryfall
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct List<T> {
     /// Content type for the object, always `list`

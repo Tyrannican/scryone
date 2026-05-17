@@ -12,6 +12,7 @@ use super::types::Color;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+/// Representation of a symbol that can appear in a card's mana cost
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CardSymbol {
     /// Content type for this object, always `card_symbol`

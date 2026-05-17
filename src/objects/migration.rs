@@ -9,6 +9,7 @@ use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
 
+/// Card Migration strategy (Beta on Scryfall)
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CardMigration {
     /// Content type for the object, always `migration`

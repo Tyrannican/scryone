@@ -1,3 +1,4 @@
+//! Objects and types for Scryfall Data
 pub mod bulk;
 pub mod card;
 pub mod catalog;
