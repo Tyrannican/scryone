@@ -170,6 +170,7 @@ impl CardSearchRequestBuilder {
     }
 }
 
+/// Request type for calling the `/cards/named` Scryfall endpoint
 #[derive(Debug, Clone)]
 pub struct NamedCardRequest {
     exact: Option<String>,
@@ -182,6 +183,7 @@ pub struct NamedCardRequest {
 }
 
 impl NamedCardRequest {
+    /// Construct a builder for a `NamedCardRequest`
     pub fn builder() -> NamedCardRequestBuilder {
         NamedCardRequestBuilder::default()
     }
@@ -210,6 +212,7 @@ impl ScryfallRequest for NamedCardRequest {
     }
 }
 
+/// Builder for constructing a [`NamedCardRequest`]
 #[derive(Default)]
 pub struct NamedCardRequestBuilder {
     exact: Option<String>,
@@ -222,45 +225,54 @@ pub struct NamedCardRequestBuilder {
 }
 
 impl NamedCardRequestBuilder {
+    /// Construct a new [`NamedCardRequestBuilder`]
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Sets the text for an exact card name search, case insensitive
     pub fn exact_name(mut self, exact: impl AsRef<str>) -> Self {
         self.exact = Some(exact.as_ref().to_string());
         self
     }
 
+    /// Sets the text for a fuzzy card name search
     pub fn fuzzy_search(mut self, input: impl AsRef<str>) -> Self {
         self.fuzzy = Some(input.as_ref().to_string());
         self
     }
 
+    /// Sets the set code to limit the search to one set
     pub fn set_code(mut self, code: impl AsRef<str>) -> Self {
         self.set = Some(code.as_ref().to_string());
         self
     }
 
+    /// Sets the [`DataFormat`] to use for the response
     pub fn data_format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
     }
 
+    /// Sets the card face to return when using the `image` data format
     pub fn face(mut self, face: impl AsRef<str>) -> Self {
         self.face = Some(face.as_ref().to_string());
         self
     }
 
+    /// Sets the image version to return when using the `image` data format
     pub fn image_version(mut self, img_version: ImageVersion) -> Self {
         self.version = Some(img_version);
         self
     }
 
+    /// Sets the flag for prettifying the JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Builds the [`NamedCardRequest`]
     pub fn build(self) -> Result<NamedCardRequest, ScryfallApiError> {
         if self.exact.is_none() && self.fuzzy.is_none() {
             return Err(ScryfallApiError::ExpectedFieldsOneOf(vec![
