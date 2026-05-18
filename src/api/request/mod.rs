@@ -1,3 +1,5 @@
+//! Request types and builders for constructing Scryfall API Requests
+
 use serde::{Serialize, de::DeserializeOwned};
 use url::Url;
 
@@ -30,22 +32,33 @@ macro_rules! add_query_pair {
 
 pub(crate) use add_query_pair;
 
+/// Scryfall GET Requests
 pub trait ScryfallRequest {
     type Response: DeserializeOwned;
 
+    /// Generates a URL for a request with appropriate query parameters
     fn to_url(&self) -> Result<Url, ScryfallApiError>;
 }
 
+/// Scryfall POST Requests
 pub trait ScryfallPostRequest {
     type Body: Serialize;
+
+    /// Generates a Body for the implementing Request
     fn body(&self) -> &Self::Body;
 }
 
+/// Type of Unique Cards to return when requesting uniques
 #[derive(Debug, Copy, Clone, PartialEq, Default)]
 pub enum UniqueMode {
+    /// Unique cards
     #[default]
     Cards,
+
+    /// Unique Art
     Art,
+
+    /// Unique print variations
     Prints,
 }
 
@@ -59,23 +72,53 @@ impl std::fmt::Display for UniqueMode {
     }
 }
 
+/// Order in which to sort a collection of cards
 #[derive(Debug, Copy, Clone, PartialEq, Default)]
 pub enum SortOrder {
+    /// Sort by name
     #[default]
     Name,
+
+    /// Sort by Magic Set
     Set,
+
+    /// Sort by released date
     Released,
+
+    /// Sort by card rarity
     Rarity,
+
+    /// Sort by card color
     Color,
+
+    /// Sort by price in USD
     Usd,
+
+    /// Sort by price in MTGO Tickets
     Tix,
+
+    /// Sort by price in EUR
     Eur,
+
+    /// Sort by Mana Value (converted mana cost)
     Cmc,
+
+    /// Sort by card power
     Power,
+
+    /// Sort by card toughness
     Toughness,
+
+    /// Sort by EDHREC rank
     EdhRec,
+
+    /// Sort by Penny Dreadful rank
     Penny,
+
+    /// Sort by artist name
     Artist,
+
+    /// Sort by card review
     Review,
 }
 
@@ -101,11 +144,17 @@ impl std::fmt::Display for SortOrder {
     }
 }
 
+/// Direction in which to sort (if applicable)
 #[derive(Debug, Copy, Clone, PartialEq, Default)]
 pub enum SortDirection {
+    /// Let Scryfall decide
     #[default]
     Auto,
+
+    /// Sort in Ascending order
     Asc,
+
+    /// Sort in Descending order
     Desc,
 }
 
@@ -119,12 +168,22 @@ impl std::fmt::Display for SortDirection {
     }
 }
 
+/// Format in which to request data
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum DataFormat {
+    /// JSON format
     Json,
+
+    /// Comma Separated Value format
     Csv,
+
+    /// Raw text format
     Text,
+
+    /// Image format
     Image,
+
+    /// Raw file bytes
     File,
 }
 
@@ -140,13 +199,25 @@ impl std::fmt::Display for DataFormat {
     }
 }
 
+/// Version of the image requested
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum ImageVersion {
+    /// Small print size
     Small,
+
+    /// Normal print size
     Normal,
+
+    /// Large print size
     Large,
+
+    /// Card as a PNG
     Png,
+
+    /// Just the Art of the card
     ArtCrop,
+
+    /// The card with the border cropped
     BorderCrop,
 }
 

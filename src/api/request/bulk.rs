@@ -1,3 +1,6 @@
+//! Request types and builders for Bulk Data Files from Scryfall
+//!
+//! More detailed information here: <https://scryfall.com/docs/api/bulk-data>
 use super::add_query_pair;
 use crate::api::{
     error::ScryfallApiError,
@@ -10,12 +13,14 @@ use crate::objects::types::BulkDataType;
 use url::Url;
 use uuid::Uuid;
 
+/// Request type for calling the `/bulk-data` Scryfall endpoint
 #[derive(Debug, Clone)]
 pub struct BulkDataRequest {
     pretty: Option<bool>,
 }
 
 impl BulkDataRequest {
+    /// Construct a builder for a `BulkDataRequest`
     pub fn builder() -> BulkDataRequestBuilder {
         BulkDataRequestBuilder::default()
     }
@@ -32,21 +37,25 @@ impl ScryfallRequest for BulkDataRequest {
     }
 }
 
+/// Builder for constructing a [`BulkDataRequest`]
 #[derive(Default)]
 pub struct BulkDataRequestBuilder {
     pretty: Option<bool>,
 }
 
 impl BulkDataRequestBuilder {
+    /// Construct a new `BulkDataRequestBuilder`
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Set the `pretty` flag for prettifying JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Build the [`BulkDataRequest`]
     pub fn build(self) -> Result<BulkDataRequest, ScryfallApiError> {
         Ok(BulkDataRequest {
             pretty: self.pretty,
@@ -54,6 +63,7 @@ impl BulkDataRequestBuilder {
     }
 }
 
+/// Request type for calling the `/bulk-data/:id` and `/bulk-data/:type` Scryfall endpoints
 #[derive(Debug, Clone)]
 pub struct BulkDataFromIdRequest {
     data_type: BulkDataId,
@@ -62,6 +72,7 @@ pub struct BulkDataFromIdRequest {
 }
 
 impl BulkDataFromIdRequest {
+    /// Construct a builder for a `BulkDataFromIdRequest`
     pub fn builder() -> BulkDataFromIdRequestBuilder {
         BulkDataFromIdRequestBuilder::default()
     }
@@ -87,6 +98,7 @@ impl ScryfallRequest for BulkDataFromIdRequest {
     }
 }
 
+/// Builder for constructing a [`BulkDataFromIdRequest`]
 #[derive(Default)]
 pub struct BulkDataFromIdRequestBuilder {
     data_type: BulkDataId,
@@ -95,6 +107,7 @@ pub struct BulkDataFromIdRequestBuilder {
 }
 
 impl BulkDataFromIdRequestBuilder {
+    /// Construct a new `BulkDataFromIdRequestBuilder`
     pub fn new(data_type: BulkDataId) -> Self {
         Self {
             data_type,
@@ -102,21 +115,25 @@ impl BulkDataFromIdRequestBuilder {
         }
     }
 
+    /// Set the ID or Type for the Bulk Data requested
     pub fn data_type(mut self, data_type: BulkDataId) -> Self {
         self.data_type = data_type;
         self
     }
 
+    /// Set the [`DataFormat`] for this request
     pub fn format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
     }
 
+    /// Set the `pretty` flag for prettifying JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Build the [`BulkDataFromIdRequest`]
     pub fn build(self) -> Result<BulkDataFromIdRequest, ScryfallApiError> {
         if let Some(fmt) = self.format {
             if !matches!(fmt, DataFormat::Json | DataFormat::File) {
@@ -132,9 +149,14 @@ impl BulkDataFromIdRequestBuilder {
     }
 }
 
+/// Type of Bulk Data type to request when calling `/bulk-data/:id` or `/bulk-data/:type` Scryfall
+/// Endpoints
 #[derive(Debug, Copy, Clone)]
 pub enum BulkDataId {
+    /// Request a [`BulkDataType`]
     Type(BulkDataType),
+
+    /// Request Bulk Data from a UUID
     Id(Uuid),
 }
 
