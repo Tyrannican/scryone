@@ -1,4 +1,4 @@
-//! Request types and builders for Bulk Data Files from Scryfall
+//! Request types and builders for Bulk Data Files from Scryfall API
 //!
 //! More detailed information here: <https://scryfall.com/docs/api/bulk-data>
 use super::add_query_pair;

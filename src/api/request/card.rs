@@ -1,3 +1,6 @@
+//! Request types and builders for Cards from Scryfall API
+//!
+//! More detailed information here: <https://scryfall.com/docs/api/cards>
 use super::{
     BASE_URL, DataFormat, ImageVersion, ScryfallApiError, ScryfallRequest, SortDirection,
     SortOrder, UniqueMode, add_query_pair,
@@ -16,6 +19,7 @@ use crate::{
 use url::Url;
 use uuid::Uuid;
 
+/// Request type for calling the `/cards/search` Scryfall endpoint
 #[derive(Debug, Clone)]
 pub struct CardSearchRequest {
     query: String,
@@ -31,6 +35,7 @@ pub struct CardSearchRequest {
 }
 
 impl CardSearchRequest {
+    /// Construct a builder for a `CardSearchRequest`
     pub fn builder() -> CardSearchRequestBuilder {
         CardSearchRequestBuilder::default()
     }
@@ -58,6 +63,7 @@ impl ScryfallRequest for CardSearchRequest {
     }
 }
 
+/// Builder for constructing a [`CardSearchRequest`]
 #[derive(Default)]
 pub struct CardSearchRequestBuilder {
     query: String,
@@ -73,6 +79,7 @@ pub struct CardSearchRequestBuilder {
 }
 
 impl CardSearchRequestBuilder {
+    /// Construct a new `CardSearchRequestBuilder`
     pub fn new(query: impl AsRef<str>) -> Self {
         Self {
             query: query.as_ref().to_string(),
@@ -80,56 +87,67 @@ impl CardSearchRequestBuilder {
         }
     }
 
+    /// Set the search query for the request
     pub fn query(mut self, query: impl AsRef<str>) -> Self {
         self.query = query.as_ref().to_string();
         self
     }
 
+    /// Set the type of unique cards returned
     pub fn unique_mode(mut self, unique_mode: UniqueMode) -> Self {
         self.unique = Some(unique_mode);
         self
     }
 
+    /// Set the sort order of returned results
     pub fn sort_order(mut self, ordering: SortOrder) -> Self {
         self.order = Some(ordering);
         self
     }
 
+    /// Set the sorting direction of the returned results
     pub fn sort_direction(mut self, dir: SortDirection) -> Self {
         self.dir = Some(dir);
         self
     }
 
+    /// Sets the flag for including extra cards in the response
     pub fn include_extras(mut self, flag: bool) -> Self {
         self.include_extras = Some(flag);
         self
     }
 
+    /// Sets the flag for including every language supported by Scryfall
     pub fn include_multilingual(mut self, flag: bool) -> Self {
         self.include_multilingual = Some(flag);
         self
     }
 
+    /// Sets the flag for including rare card variants in the response
     pub fn include_variations(mut self, flag: bool) -> Self {
         self.include_variations = Some(flag);
         self
     }
 
+    /// Set the page number to return
     pub fn page(mut self, page_no: u32) -> Self {
         self.page = Some(page_no);
         self
     }
 
+    /// Set the [`DataFormat`] to return
     pub fn data_format(mut self, data_format: DataFormat) -> Self {
         self.format = Some(data_format);
         self
     }
 
-    pub fn prettify_json(mut self, flag: bool) -> Self {
+    /// Sets the flag for prettifying the JSON response
+    pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Build the [`CardSearchRequest`]
     pub fn build(self) -> Result<CardSearchRequest, ScryfallApiError> {
         if let Some(fmt) = self.format {
             if !matches!(fmt, DataFormat::Json | DataFormat::Csv) {
