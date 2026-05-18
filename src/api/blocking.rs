@@ -1,3 +1,13 @@
+//! Blocking Scryfall API Client
+//!
+//! The blocking `ScryfallClient` will block the current thread to execute instead of returning
+//! futures that need to be executed on a runtime.
+//!
+//! This follows the same rules as [`reqwest::blocking::Client`] so the blocking client _must not_
+//! be executed within an async runtime or it will panic when attempting to block.
+//!
+//! See [`reqwest::blocking`] documentation for more information
+
 use crate::api::error::ScryfallApiError;
 
 use super::ScryfallClient as AsyncScryfallClient;
@@ -6,12 +16,22 @@ use reqwest::IntoUrl;
 use serde::de::DeserializeOwned;
 use tokio::runtime::{Builder, Runtime};
 
+/// Scryfall API Blocking Client
+///
+/// The Client can make requests to specific endpoints based on the [`ScryfallRequest`] that is
+/// provided or can make generalised requests to a any endpoint.
+///
+/// The [`ScryfallRequest`] calls automatically construct the URL to that endpoint so you don't
+/// have to and automatically deserialise the response to the expected format.
+///
+/// The generalised requests require a URL and for the response type to be given.
 pub struct ScryfallClient {
     inner: AsyncScryfallClient,
     rt: Runtime,
 }
 
 impl ScryfallClient {
+    /// Construct a new `ScryfallClient`
     pub fn new() -> Self {
         let rt = Builder::new_current_thread()
             .enable_io()
@@ -23,10 +43,14 @@ impl ScryfallClient {
         Self { inner: client, rt }
     }
 
+    /// Call a generic endpoint that has response type `T`
+    ///
+    /// This is useful for download endpoints to download bulk data
     pub fn call<T: DeserializeOwned>(&self, url: impl IntoUrl) -> Result<T, ScryfallApiError> {
         self.rt.block_on(self.inner.call(url))
     }
 
+    // TODO: Rethink this one
     pub fn paginated_request<T: DeserializeOwned + Clone>(
         &self,
         url: impl IntoUrl,
@@ -34,10 +58,17 @@ impl ScryfallClient {
         self.rt.block_on(self.inner.paginated_request(url))
     }
 
+    /// Makes a GET request to a Scryfall endpoint depending on the `ScryfallRequest` provided
+    ///
+    /// The request will automatically contruct the URL and query parameters based on the fields
+    /// that are present when it was built
     pub fn get<R: ScryfallRequest>(&self, request: R) -> Result<R::Response, ScryfallApiError> {
         self.rt.block_on(self.inner.get(request))
     }
 
+    /// Makes a POST request to a Scryfall endpoint
+    ///
+    /// The only endpoint that allows this currently is `/cards/collection`
     pub fn post<R: ScryfallRequest + ScryfallPostRequest>(
         &self,
         request: R,
