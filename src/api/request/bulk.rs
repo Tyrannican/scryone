@@ -122,6 +122,10 @@ impl BulkDataFromIdRequestBuilder {
     }
 
     /// Set the [`DataFormat`] for this request
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
+    /// * [`DataFormat::File`]
     pub fn format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
