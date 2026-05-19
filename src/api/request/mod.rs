@@ -168,7 +168,7 @@ impl std::fmt::Display for SortDirection {
     }
 }
 
-/// Format in which to request data
+/// Format in which to return the Responses from the API
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum DataFormat {
     /// JSON format

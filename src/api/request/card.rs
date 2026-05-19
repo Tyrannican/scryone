@@ -20,6 +20,9 @@ use url::Url;
 use uuid::Uuid;
 
 /// Request type for calling the `/cards/search` Scryfall endpoint
+///
+/// Returns a [`List`] object containing Cards found using a fulltext search string
+/// Response is paginated, returning 175 cards per page (as per Scryfall's documentation)
 #[derive(Debug, Clone)]
 pub struct CardSearchRequest {
     query: String,
@@ -136,6 +139,10 @@ impl CardSearchRequestBuilder {
     }
 
     /// Set the [`DataFormat`] to return
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
+    /// * [`DataFormat::Csv`]
     pub fn data_format(mut self, data_format: DataFormat) -> Self {
         self.format = Some(data_format);
         self
@@ -171,6 +178,12 @@ impl CardSearchRequestBuilder {
 }
 
 /// Request type for calling the `/cards/named` Scryfall endpoint
+///
+/// Returns a Card based on a name search string
+///
+/// `exact` matches card names exactly, otherwise a 404 is returned
+/// `fuzzy` will perform a fuzzy search for the card and return the closest match to the input
+/// string, otherwise a 404 is returned
 #[derive(Debug, Clone)]
 pub struct NamedCardRequest {
     exact: Option<String>,
@@ -225,7 +238,7 @@ pub struct NamedCardRequestBuilder {
 }
 
 impl NamedCardRequestBuilder {
-    /// Construct a new [`NamedCardRequestBuilder`]
+    /// Construct a new `NamedCardRequestBuilder`
     pub fn new() -> Self {
         Self::default()
     }
@@ -249,6 +262,11 @@ impl NamedCardRequestBuilder {
     }
 
     /// Sets the [`DataFormat`] to use for the response
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
+    /// * [`DataFormat::Text`]
+    /// * [`DataFormat::Image`]
     pub fn data_format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
@@ -299,6 +317,15 @@ impl NamedCardRequestBuilder {
     }
 }
 
+/// Request type for calling the `/cards/autocomplete` Scryfall endpoint
+///
+/// Returns a [`Catalog`] object containing up to 20 full English card names that could be
+/// autocompletions of the given string parameter
+///
+/// Names are sorted with the nearest match first
+///
+/// If the `query` parameter is less than 2 characters long, or no names match, the [`Catalog`]
+/// will contain 0 items (instead of an error as per Scryfall's documentation)
 #[derive(Debug, Clone)]
 pub struct CardAutoCompleteRequest {
     query: String,
@@ -308,6 +335,7 @@ pub struct CardAutoCompleteRequest {
 }
 
 impl CardAutoCompleteRequest {
+    /// Construct a builder for a `CardAutoCompleteRequest`
     pub fn builder() -> CardAutoCompleteRequestBuilder {
         CardAutoCompleteRequestBuilder::default()
     }
@@ -327,6 +355,7 @@ impl ScryfallRequest for CardAutoCompleteRequest {
     }
 }
 
+/// Builder for constructing a [`CardAutoCompleteRequest`]
 #[derive(Default)]
 pub struct CardAutoCompleteRequestBuilder {
     query: String,
@@ -336,6 +365,7 @@ pub struct CardAutoCompleteRequestBuilder {
 }
 
 impl CardAutoCompleteRequestBuilder {
+    /// Construct a new `CardAutoCompleteRequestBuilder`
     pub fn new(query: impl AsRef<str>) -> Self {
         Self {
             query: query.as_ref().to_string(),
@@ -343,26 +373,34 @@ impl CardAutoCompleteRequestBuilder {
         }
     }
 
+    /// Sets the query string for the autocomplete text
     pub fn query(mut self, query: impl AsRef<str>) -> Self {
         self.query = query.as_ref().to_string();
         self
     }
 
+    /// Sets the [`DataFormat`] for the response
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
     pub fn format(mut self, data_format: DataFormat) -> Self {
         self.format = Some(data_format);
         self
     }
 
+    /// Sets the flag for prettifying JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Sets the flag for including extra cards in the response
     pub fn include_extras(mut self, flag: bool) -> Self {
         self.include_extras = Some(flag);
         self
     }
 
+    /// Builds the [`CardAutoCompleteRequest`]
     pub fn build(self) -> Result<CardAutoCompleteRequest, ScryfallApiError> {
         if let Some(fmt) = self.format {
             if !matches!(fmt, DataFormat::Json) {
@@ -379,6 +417,12 @@ impl CardAutoCompleteRequestBuilder {
     }
 }
 
+/// Request type for calling the `/cards/random` Scryfall endpoint
+///
+/// Returns a single random [`Card`] object
+///
+/// Setting the `query` parameter supports the same fulltext search and will filter the pool of
+/// cards before returning a random entry
 #[derive(Debug, Clone)]
 pub struct RandomCardRequest {
     query: Option<String>,
@@ -389,6 +433,7 @@ pub struct RandomCardRequest {
 }
 
 impl RandomCardRequest {
+    /// Constructs a builder for a `RandomCardRequest`
     pub fn builder() -> RandomCardRequestBuilder {
         RandomCardRequestBuilder::default()
     }
@@ -409,6 +454,7 @@ impl ScryfallRequest for RandomCardRequest {
     }
 }
 
+/// Builder for constructing a [`RandomCardRequest`]
 #[derive(Default)]
 pub struct RandomCardRequestBuilder {
     query: Option<String>,
@@ -419,35 +465,47 @@ pub struct RandomCardRequestBuilder {
 }
 
 impl RandomCardRequestBuilder {
+    /// Constructs a new `RandomCardRequestBuilder`
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Sets the query parameter to filter card results before returning a random one
     pub fn query(mut self, query: impl AsRef<str>) -> Self {
         self.query = Some(query.as_ref().to_string());
         self
     }
 
+    /// Sets the [`DataFormat`] for the response
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
+    /// * [`DataFormat::Text`]
+    /// * [`DataFormat::Image`]
     pub fn data_format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
     }
 
+    /// Sets the card face to return when using the `image` data format
     pub fn face(mut self, face: impl AsRef<str>) -> Self {
         self.face = Some(face.as_ref().to_string());
         self
     }
 
+    /// Sets the image version to return when using the `image` data format
     pub fn image_version(mut self, version: ImageVersion) -> Self {
         self.version = Some(version);
         self
     }
 
+    /// Sets the flag for prettifying the JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Builds the [`RandomCardRequest`]
     pub fn build(self) -> Result<RandomCardRequest, ScryfallApiError> {
         if let Some(fmt) = self.format {
             if !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
@@ -465,10 +523,21 @@ impl RandomCardRequestBuilder {
     }
 }
 
+/// Request type for calling the `/cards/collection` Scryfall endpoint
+///
+/// This is a POST request that accepts an array of [`CardIdentifier`] and returns a [`List`] of 75
+/// card references
 #[derive(Debug, Clone)]
 pub struct CardCollectionRequest {
     identifiers: Vec<CardIdentifier>,
     pretty: Option<bool>,
+}
+
+impl CardCollectionRequest {
+    /// Construct a builder for a `CardCollectionRequest`
+    pub fn builder() -> CardCollectionRequestBuilder {
+        CardCollectionRequestBuilder::default()
+    }
 }
 
 impl ScryfallRequest for CardCollectionRequest {
@@ -492,6 +561,7 @@ impl ScryfallPostRequest for CardCollectionRequest {
     }
 }
 
+/// Builder for constructing a [`CardCollectionRequest`]
 #[derive(Default)]
 pub struct CardCollectionRequestBuilder {
     identifiers: Vec<CardIdentifier>,
@@ -499,6 +569,7 @@ pub struct CardCollectionRequestBuilder {
 }
 
 impl CardCollectionRequestBuilder {
+    /// Constructs a new `CardCollectionRequestBuilder`
     pub fn new(identifiers: Vec<CardIdentifier>) -> Self {
         Self {
             identifiers,
@@ -506,16 +577,19 @@ impl CardCollectionRequestBuilder {
         }
     }
 
+    /// Sets the array of Card identifiers for the request
     pub fn identifiers(mut self, identifiers: Vec<CardIdentifier>) -> Self {
         self.identifiers = identifiers;
         self
     }
 
+    /// Sets the flag for prettifying the JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Builds the [`CardCollectionRequest`]
     pub fn build(self) -> Result<CardCollectionRequest, ScryfallApiError> {
         if self.identifiers.is_empty() {
             return Err(ScryfallApiError::InvalidData(
@@ -530,8 +604,12 @@ impl CardCollectionRequestBuilder {
     }
 }
 
+/// Request type for the `/cards/:code/:number(/:lang)` Scryfall endpoint
+///
+/// Returns a signle card with the given set `code` and collector `number`.
+/// Also supports optional `lang` field to retrieve a non-English version of the card
 #[derive(Debug, Clone)]
-pub struct SingleCardRequest {
+pub struct CardBySetAndIdRequest {
     set_code: String,
     collector_number: String,
     language: Option<Language>,
@@ -541,13 +619,14 @@ pub struct SingleCardRequest {
     pretty: Option<bool>,
 }
 
-impl SingleCardRequest {
-    pub fn builder() -> SingleCardRequestBuilder {
-        SingleCardRequestBuilder::default()
+impl CardBySetAndIdRequest {
+    /// Construct a new builder for a `CardBySetAndIdRequest`
+    pub fn builder() -> CardBySetAndIdRequestBuilder {
+        CardBySetAndIdRequestBuilder::default()
     }
 }
 
-impl ScryfallRequest for SingleCardRequest {
+impl ScryfallRequest for CardBySetAndIdRequest {
     type Response = Card;
 
     fn to_url(&self) -> Result<Url, ScryfallApiError> {
@@ -568,8 +647,9 @@ impl ScryfallRequest for SingleCardRequest {
     }
 }
 
+/// Builder for constructing a [`CardBySetAndIdRequest`]
 #[derive(Default)]
-pub struct SingleCardRequestBuilder {
+pub struct CardBySetAndIdRequestBuilder {
     set_code: String,
     collector_number: String,
     language: Option<Language>,
@@ -579,7 +659,8 @@ pub struct SingleCardRequestBuilder {
     pretty: Option<bool>,
 }
 
-impl SingleCardRequestBuilder {
+impl CardBySetAndIdRequestBuilder {
+    /// Constructs a new `CardBySetAndIdRequestBuilder`
     pub fn new(set_code: impl AsRef<str>, collector_number: impl AsRef<str>) -> Self {
         Self {
             set_code: set_code.as_ref().to_string(),
@@ -588,49 +669,62 @@ impl SingleCardRequestBuilder {
         }
     }
 
+    /// Sets the 3-5 letter `set_code` field to select the Set the card belongs to
     pub fn set_code(mut self, set_code: impl AsRef<str>) -> Self {
         self.set_code = set_code.as_ref().to_string();
         self
     }
 
+    /// Sets the `collector_number` field to retrieve the card from the Set
     pub fn collector_number(mut self, collector_number: impl AsRef<str>) -> Self {
         self.collector_number = collector_number.as_ref().to_string();
         self
     }
 
+    /// Sets the [`Language`] field to retrieve the non-English version of the Card
     pub fn language(mut self, lang: Language) -> Self {
         self.language = Some(lang);
         self
     }
 
+    /// Sets the [`DataFormat`] for the response
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
+    /// * [`DataFormat::Text`]
+    /// * [`DataFormat::Image`]
     pub fn data_format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
     }
 
+    /// Sets the card face to return when using the `image` data format
     pub fn face(mut self, face: impl AsRef<str>) -> Self {
         self.face = Some(face.as_ref().to_string());
         self
     }
 
+    /// Sets the image version to return when using the `image` data format
     pub fn image_version(mut self, img_version: ImageVersion) -> Self {
         self.version = Some(img_version);
         self
     }
 
+    /// Sets the flag for prettifying the JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
-    pub fn build(self) -> Result<SingleCardRequest, ScryfallApiError> {
+    /// Builds the [`CardBySetAndIdRequest`]
+    pub fn build(self) -> Result<CardBySetAndIdRequest, ScryfallApiError> {
         if let Some(fmt) = self.format {
             if !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
         }
 
-        Ok(SingleCardRequest {
+        Ok(CardBySetAndIdRequest {
             set_code: self.set_code,
             collector_number: self.collector_number,
             language: self.language,
@@ -642,17 +736,30 @@ impl SingleCardRequestBuilder {
     }
 }
 
+/// ID type to determine what endpoint to call when calling `/cards/:card_id/:id` Scryfall endpoint
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum CardId {
+    /// Use the `/cards/:id` endpoint
     Card(Uuid),
+
+    /// Use the `/cards/multiverse/:id` endpoint
     Multiverse(u32),
+
+    /// Use the `/cards/mtgo/:id` endpoint
     Mtgo(u32),
+
+    /// Use the `/cards/arena/:id` endpoint
     Arena(u32),
+
+    /// Use the `/cards/tcgplayer/:id` endpoint
     TcgPlayer(u32),
+
+    /// Use the `/cards/cardmarket/:id` endpoint
     CardMarket(u32),
 }
 
 impl CardId {
+    /// Determines the subpath of the URL to construct for the `/cards/:card_id/:id` endpoint
     pub(crate) fn subpaths(&self) -> (String, String) {
         match self {
             Self::Card(id) => (String::new(), id.to_string()),
@@ -674,6 +781,12 @@ impl Default for CardId {
     }
 }
 
+/// Request type for calling the `/cards/:card_id/:id` endpoint
+///
+/// The [`CardId`] is used to construct the URL that is used for the request and appends the inner
+/// ID value to the end
+///
+/// E.g. A [`CardId::Mtgo`] would construct `/cards/mtgo/:id` URL
 #[derive(Debug, Clone)]
 pub struct CardFromIdRequest {
     id: CardId,
@@ -684,6 +797,7 @@ pub struct CardFromIdRequest {
 }
 
 impl CardFromIdRequest {
+    /// Constructs the builder for a `CardFromIdRequest`
     pub fn builder() -> CardFromIdRequestBuilder {
         CardFromIdRequestBuilder::default()
     }
@@ -711,6 +825,7 @@ impl ScryfallRequest for CardFromIdRequest {
     }
 }
 
+/// Builder for constructing a [`CardFromIdRequest`]
 #[derive(Default)]
 pub struct CardFromIdRequestBuilder {
     id: CardId,
@@ -721,6 +836,7 @@ pub struct CardFromIdRequestBuilder {
 }
 
 impl CardFromIdRequestBuilder {
+    /// Constructs a new `CardFromIdRequestBuilder`
     pub fn new(id: CardId) -> Self {
         Self {
             id,
@@ -728,31 +844,42 @@ impl CardFromIdRequestBuilder {
         }
     }
 
+    /// Sets the [`CardId`] for the request
     pub fn id(mut self, id: CardId) -> Self {
         self.id = id;
         self
     }
 
+    /// Sets the [`DataFormat`] for the response
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
+    /// * [`DataFormat::Text`]
+    /// * [`DataFormat::Image`]
     pub fn data_format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
     }
 
+    /// Sets the card face to return when using the `image` data format
     pub fn face(mut self, face: impl AsRef<str>) -> Self {
         self.face = Some(face.as_ref().to_string());
         self
     }
 
-    pub fn version(mut self, img_version: ImageVersion) -> Self {
+    /// Sets the image version to return when using the `image` data format
+    pub fn image_version(mut self, img_version: ImageVersion) -> Self {
         self.version = Some(img_version);
         self
     }
 
+    /// Sets the flag for prettifying the JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Builds the [`CardFromIdRequest`]
     pub fn build(self) -> Result<CardFromIdRequest, ScryfallApiError> {
         if let Some(fmt) = self.format {
             if !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
