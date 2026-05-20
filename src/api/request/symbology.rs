@@ -1,3 +1,6 @@
+//! Request types and builders for Mana Symbols and costs from Scryfall API
+//!
+//! More detailed information here: <https://scryfall.com/docs/api/card-symbols>
 use super::{BASE_URL, ScryfallApiError, ScryfallRequest, add_query_pair};
 use crate::{
     api::request::DataFormat,
@@ -6,6 +9,7 @@ use crate::{
 
 use url::Url;
 
+/// Request type for the `/symbology` Scryfall endpoint
 #[derive(Debug, Clone)]
 pub struct SymbolListRequest {
     format: Option<DataFormat>,
@@ -13,6 +17,7 @@ pub struct SymbolListRequest {
 }
 
 impl SymbolListRequest {
+    /// Constructs a builder for a `SymbolListRequest`
     pub fn builder() -> SymbolListRequestBuilder {
         SymbolListRequestBuilder::default()
     }
@@ -30,6 +35,7 @@ impl ScryfallRequest for SymbolListRequest {
     }
 }
 
+/// Builder for constructing a [`SymbolListRequest`]
 #[derive(Default)]
 pub struct SymbolListRequestBuilder {
     format: Option<DataFormat>,
@@ -37,20 +43,27 @@ pub struct SymbolListRequestBuilder {
 }
 
 impl SymbolListRequestBuilder {
+    /// Constructs a new `SymbolListRequestBuilder`
     pub fn new() -> Self {
         Self::default()
     }
 
+    /// Sets the [`DataFormat`] for the response
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
     pub fn format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
     }
 
+    /// Sets the flag for prettifying the JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Builds the [`SymbolListRequest`]
     pub fn build(self) -> Result<SymbolListRequest, ScryfallApiError> {
         if let Some(fmt) = self.format {
             if !matches!(fmt, DataFormat::Json) {
@@ -65,6 +78,7 @@ impl SymbolListRequestBuilder {
     }
 }
 
+/// Request type for calling the `/symbology/parse-mana` endpoint
 #[derive(Debug, Clone)]
 pub struct ParseManaRequest {
     cost: String,
@@ -73,6 +87,7 @@ pub struct ParseManaRequest {
 }
 
 impl ParseManaRequest {
+    /// Constructs a builder for a `ParseManaRequest`
     pub fn builder() -> ParseManaRequestBuilder {
         ParseManaRequestBuilder::default()
     }
@@ -94,6 +109,7 @@ impl ScryfallRequest for ParseManaRequest {
     }
 }
 
+/// Builder for constructing a [`ParseManaRequest`]
 #[derive(Default)]
 pub struct ParseManaRequestBuilder {
     cost: String,
@@ -102,6 +118,7 @@ pub struct ParseManaRequestBuilder {
 }
 
 impl ParseManaRequestBuilder {
+    /// Constructs a new `ParseManaRequestBuilder`
     pub fn new(cost: impl AsRef<str>) -> Self {
         Self {
             cost: cost.as_ref().to_string(),
@@ -109,21 +126,28 @@ impl ParseManaRequestBuilder {
         }
     }
 
+    /// Sets the `cost` field which is the mana value to parse
     pub fn cost(mut self, cost: impl AsRef<str>) -> Self {
         self.cost = cost.as_ref().to_string();
         self
     }
 
+    /// Sets the [`DataFormat`] for the response
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
     pub fn format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
     }
 
+    /// Sets the flag for prettifying the JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Builds the [`ParseManaRequest`]
     pub fn build(self) -> Result<ParseManaRequest, ScryfallApiError> {
         if self.cost.is_empty() {
             return Err(ScryfallApiError::ExpectedField("cost".to_string()));
