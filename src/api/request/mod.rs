@@ -48,6 +48,14 @@ pub trait ScryfallPostRequest {
     fn body(&self) -> &Self::Body;
 }
 
+/// Paginated requests
+pub trait PaginatedRequest {
+    type Item;
+
+    /// Retrieve the data from the current page and URL for the next page, if any
+    fn parts(self) -> (Vec<Self::Item>, Option<Url>);
+}
+
 /// Type of Unique Cards to return when requesting uniques
 #[derive(Debug, Copy, Clone, PartialEq, Default)]
 pub enum UniqueMode {

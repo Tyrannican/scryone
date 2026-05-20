@@ -7,6 +7,7 @@
 //!
 //! More information can be found here: <https://scryfall.com/docs/api/lists>
 
+use crate::api::request::PaginatedRequest;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -35,4 +36,11 @@ pub struct List<T> {
     /// information provided
     #[serde(skip_serializing_if = "Option::is_none")]
     pub warnings: Option<Vec<String>>,
+}
+
+impl<T> PaginatedRequest for List<T> {
+    type Item = T;
+    fn parts(self) -> (Vec<Self::Item>, Option<Url>) {
+        (self.data, self.next_page)
+    }
 }

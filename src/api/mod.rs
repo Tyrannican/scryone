@@ -4,13 +4,18 @@ pub mod blocking;
 pub mod error;
 pub mod request;
 
+use std::{any::Any, time::Duration};
+
 pub use error::ScryfallApiError;
 pub use request::{ScryfallPostRequest, ScryfallRequest};
 
 use reqwest::{Client, IntoUrl, StatusCode};
 use serde::de::DeserializeOwned;
 
-use crate::objects::{List, error::ScryfallError};
+use crate::{
+    api::request::PaginatedRequest,
+    objects::{List, error::ScryfallError},
+};
 
 const SCRYFALL_USER_AGENT: &str = "scryone-agent";
 const ACCEPT_HEADER: &str = "application/json;q=0.9,*/*;q=0.8";
@@ -54,36 +59,35 @@ impl ScryfallClient {
             .map_err(|e| ScryfallApiError::ApiCall(e))
     }
 
-    // TODO: Rethink this one
-    pub async fn paginated_request<T: DeserializeOwned + Clone>(
+    /// Makes a paginaged GET request to a Scryfall endpoint depending on the `ScryfallRequest`
+    /// provided
+    ///
+    /// This will work on requests that return a `List<T>` type and will follow the pages until
+    /// there are no more and return the data in a single Vec<T>
+    pub async fn paginated<R>(
         &self,
-        url: impl IntoUrl,
-    ) -> Result<Vec<T>, ScryfallApiError> {
-        let mut results: Vec<T> = Vec::new();
-        let mut url = url.into_url()?;
+        request: R,
+    ) -> Result<Vec<<R::Response as PaginatedRequest>::Item>, ScryfallApiError>
+    where
+        R: ScryfallRequest,
+        R::Response: PaginatedRequest,
+    {
+        let mut data = Vec::new();
+        let mut url = request.to_url()?;
+
         loop {
-            let list = self
-                .client
-                .get(url.clone())
-                .header("User-Agent", SCRYFALL_USER_AGENT)
-                .header("Accept", ACCEPT_HEADER)
-                .send()
-                .await?
-                .json::<List<T>>()
-                .await?;
-
-            results.extend_from_slice(&list.data);
-
-            if list.has_more {
-                url = list
-                    .next_page
-                    .expect("has_more is set so url should also be present");
-            } else {
-                break;
+            let page: R::Response = self.call(url).await?;
+            let (items, next_page) = page.parts();
+            data.extend(items);
+            match next_page {
+                Some(u) => url = u,
+                None => break,
             }
+
+            tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
         }
 
-        Ok(results)
+        Ok(data)
     }
 
     /// Makes a GET request to a Scryfall endpoint depending on the `ScryfallRequest` provided
@@ -107,7 +111,9 @@ impl ScryfallClient {
         let status = response.status();
 
         if status.is_success() {
-            return Ok(response.json::<R::Response>().await?);
+            let t = response.json::<R::Response>().await?;
+            todo!()
+            // return Ok(response.json::<R::Response>().await?);
         }
 
         let body: ScryfallError = response

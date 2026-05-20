@@ -11,7 +11,7 @@
 use crate::api::error::ScryfallApiError;
 
 use super::ScryfallClient as AsyncScryfallClient;
-use super::request::{ScryfallPostRequest, ScryfallRequest};
+use super::request::{PaginatedRequest, ScryfallPostRequest, ScryfallRequest};
 use reqwest::IntoUrl;
 use serde::de::DeserializeOwned;
 use tokio::runtime::{Builder, Runtime};
@@ -50,12 +50,20 @@ impl ScryfallClient {
         self.rt.block_on(self.inner.call(url))
     }
 
-    // TODO: Rethink this one
-    pub fn paginated_request<T: DeserializeOwned + Clone>(
+    /// Makes a paginaged GET request to a Scryfall endpoint depending on the `ScryfallRequest`
+    /// provided
+    ///
+    /// This will work on requests that return a `List<T>` type and will follow the pages until
+    /// there are no more and return the data in a single Vec<T>
+    pub fn paginated<R>(
         &self,
-        url: impl IntoUrl,
-    ) -> Result<Vec<T>, ScryfallApiError> {
-        self.rt.block_on(self.inner.paginated_request(url))
+        request: R,
+    ) -> Result<Vec<<R::Response as PaginatedRequest>::Item>, ScryfallApiError>
+    where
+        R: ScryfallRequest,
+        R::Response: PaginatedRequest,
+    {
+        self.rt.block_on(self.inner.paginated(request))
     }
 
     /// Makes a GET request to a Scryfall endpoint depending on the `ScryfallRequest` provided
