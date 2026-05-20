@@ -1,3 +1,6 @@
+//! Request types and builders for Rulings from Scryfall API
+//!
+//! More detailed information here: <https://scryfall.com/docs/api/rulings>
 use std::str::FromStr;
 
 use url::Url;
@@ -12,12 +15,18 @@ use crate::{
     objects::{list::List, ruling::Ruling},
 };
 
+/// The ID of the Ruling to request
 #[derive(Debug, Clone, PartialEq)]
 pub enum RulingId {
+    /// Use the `/cards/multiverse/:id/rulings` endpoint
     Multiverse(u32),
+    /// Use the `/cards/mtgo/:id/rulings` endpoint
     Mtgo(u32),
+    /// Use the `/cards/arena/:id/rulings` endpoint
     Arena(u32),
+    /// Use the `/cards/:id/rulings` endpoint
     Card(Uuid),
+    /// Use the `/cards/:code/:number/rulings` endpoint
     SetAndCollector((String, String)),
 }
 
@@ -42,6 +51,7 @@ impl Default for RulingId {
     }
 }
 
+/// Request type for calling the `/cards/:ruling_id/:id/rulings` Scryfall endpoint
 #[derive(Debug, Clone)]
 pub struct RulingRequest {
     id: RulingId,
@@ -50,6 +60,7 @@ pub struct RulingRequest {
 }
 
 impl RulingRequest {
+    /// Construct a builder for `RulingRequest`
     pub fn builder() -> RulingRequestBuilder {
         RulingRequestBuilder::default()
     }
@@ -75,6 +86,7 @@ impl ScryfallRequest for RulingRequest {
     }
 }
 
+/// Builder for constructing a [`RulingRequest`]
 #[derive(Default)]
 pub struct RulingRequestBuilder {
     id: RulingId,
@@ -83,6 +95,7 @@ pub struct RulingRequestBuilder {
 }
 
 impl RulingRequestBuilder {
+    /// Construct a new `RulingRequestBuilder`
     pub fn new(id: RulingId) -> Self {
         Self {
             id,
@@ -90,21 +103,28 @@ impl RulingRequestBuilder {
         }
     }
 
+    /// Set the [`RulingId`] for the request which is used to construct the endpoint URI
     pub fn id(mut self, id: RulingId) -> Self {
         self.id = id;
         self
     }
 
+    /// Set the [`DataFormat`] for the request
+    ///
+    /// Supports:
+    /// * [`DataFormat::Json`]
     pub fn data_format(mut self, fmt: DataFormat) -> Self {
         self.format = Some(fmt);
         self
     }
 
+    /// Sets the flag for prettifying the JSON output
     pub fn pretty(mut self, flag: bool) -> Self {
         self.pretty = Some(flag);
         self
     }
 
+    /// Builds the [`RulingRequest`]
     pub fn build(self) -> Result<RulingRequest, ScryfallApiError> {
         if let Some(fmt) = self.format {
             if !matches!(fmt, DataFormat::Json) {
