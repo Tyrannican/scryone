@@ -126,11 +126,10 @@ impl RulingRequestBuilder {
 
     /// Builds the [`RulingRequest`]
     pub fn build(self) -> Result<RulingRequest, ScryfallApiError> {
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(RulingRequest {
             id: self.id,

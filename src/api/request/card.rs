@@ -156,11 +156,10 @@ impl CardSearchRequestBuilder {
 
     /// Build the [`CardSearchRequest`]
     pub fn build(self) -> Result<CardSearchRequest, ScryfallApiError> {
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json | DataFormat::Csv) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json | DataFormat::Csv) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(CardSearchRequest {
             query: self.query,
@@ -208,11 +207,11 @@ impl ScryfallRequest for NamedCardRequest {
     fn to_url(&self) -> Result<Url, ScryfallApiError> {
         let mut url = Url::parse(BASE_URL)?.join("/cards/named")?;
         if let Some(ref exact) = self.exact {
-            url.query_pairs_mut().append_pair("exact", &exact);
+            url.query_pairs_mut().append_pair("exact", exact);
         }
 
         if let Some(ref fuzzy) = self.fuzzy {
-            url.query_pairs_mut().append_pair("fuzzy", &fuzzy);
+            url.query_pairs_mut().append_pair("fuzzy", fuzzy);
         }
 
         add_query_pair!(url, &self.set, "set");
@@ -299,11 +298,10 @@ impl NamedCardRequestBuilder {
             ]));
         }
 
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(NamedCardRequest {
             exact: self.exact,
@@ -402,11 +400,10 @@ impl CardAutoCompleteRequestBuilder {
 
     /// Builds the [`CardAutoCompleteRequest`]
     pub fn build(self) -> Result<CardAutoCompleteRequest, ScryfallApiError> {
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(CardAutoCompleteRequest {
             query: self.query,
@@ -507,11 +504,10 @@ impl RandomCardRequestBuilder {
 
     /// Builds the [`RandomCardRequest`]
     pub fn build(self) -> Result<RandomCardRequest, ScryfallApiError> {
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(RandomCardRequest {
             query: self.query,
@@ -546,7 +542,7 @@ impl ScryfallRequest for CardCollectionRequest {
     fn to_url(&self) -> Result<Url, ScryfallApiError> {
         let mut url = Url::parse(BASE_URL)?
             .join("/cards/collection")
-            .map_err(|e| ScryfallApiError::UrlParse(e))?;
+            .map_err(ScryfallApiError::UrlParse)?;
 
         add_query_pair!(url, &self.pretty, "pretty");
         Ok(url)
@@ -718,11 +714,10 @@ impl CardBySetAndIdRequestBuilder {
 
     /// Builds the [`CardBySetAndIdRequest`]
     pub fn build(self) -> Result<CardBySetAndIdRequest, ScryfallApiError> {
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(CardBySetAndIdRequest {
             set_code: self.set_code,
@@ -881,11 +876,10 @@ impl CardFromIdRequestBuilder {
 
     /// Builds the [`CardFromIdRequest`]
     pub fn build(self) -> Result<CardFromIdRequest, ScryfallApiError> {
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(CardFromIdRequest {
             id: self.id,

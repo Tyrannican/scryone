@@ -24,7 +24,7 @@ impl ScryfallRequest for CatalogRequest {
 
     fn to_url(&self) -> Result<Url, ScryfallApiError> {
         let mut url = Url::parse(BASE_URL)?;
-        let path = format!("/catalog/{}", self.catalog_type.to_string());
+        let path = format!("/catalog/{}", self.catalog_type);
         url = url.join(&path)?;
 
         Ok(url)

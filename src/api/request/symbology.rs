@@ -65,11 +65,10 @@ impl SymbolListRequestBuilder {
 
     /// Builds the [`SymbolListRequest`]
     pub fn build(self) -> Result<SymbolListRequest, ScryfallApiError> {
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(SymbolListRequest {
             format: self.format,
@@ -98,7 +97,7 @@ impl ScryfallRequest for ParseManaRequest {
 
     fn to_url(&self) -> Result<Url, ScryfallApiError> {
         let mut url = Url::parse(BASE_URL)?;
-        let path = format!("/symbology/parse-mana");
+        let path = "/symbology/parse-mana".to_string();
         url = url.join(&path)?;
 
         url.query_pairs_mut().append_pair("cost", &self.cost);
@@ -153,11 +152,10 @@ impl ParseManaRequestBuilder {
             return Err(ScryfallApiError::ExpectedField("cost".to_string()));
         }
 
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(ParseManaRequest {
             cost: self.cost,

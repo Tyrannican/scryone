@@ -139,11 +139,10 @@ impl BulkDataFromIdRequestBuilder {
 
     /// Build the [`BulkDataFromIdRequest`]
     pub fn build(self) -> Result<BulkDataFromIdRequest, ScryfallApiError> {
-        if let Some(fmt) = self.format {
-            if !matches!(fmt, DataFormat::Json | DataFormat::File) {
+        if let Some(fmt) = self.format
+            && !matches!(fmt, DataFormat::Json | DataFormat::File) {
                 return Err(ScryfallApiError::InvalidDataFormat(fmt));
             }
-        }
 
         Ok(BulkDataFromIdRequest {
             data_type: self.data_type,
