@@ -34,6 +34,7 @@ pub(crate) use add_query_pair;
 
 /// Scryfall GET Requests
 pub trait ScryfallRequest {
+    /// The response for the given request
     type Response: DeserializeOwned;
 
     /// Generates a URL for a request with appropriate query parameters
@@ -42,6 +43,7 @@ pub trait ScryfallRequest {
 
 /// Scryfall POST Requests
 pub trait ScryfallPostRequest {
+    /// The POST request body to send
     type Body: Serialize;
 
     /// Generates a Body for the implementing Request
@@ -50,6 +52,7 @@ pub trait ScryfallPostRequest {
 
 /// Paginated requests
 pub trait PaginatedRequest {
+    /// The item which the Paginated request will contain within the returned List
     type Item;
 
     /// Retrieve the data from the current page and URL for the next page, if any

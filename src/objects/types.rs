@@ -826,46 +826,81 @@ impl std::fmt::Display for Rarity {
 /// Supported languages for a card in Scryfall
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize)]
 pub enum Language {
+    /// English language
     #[serde(rename = "en")]
     English,
+
+    /// Spanish language
     #[serde(rename = "es")]
     Spanish,
+
+    /// French language
     #[serde(rename = "fr")]
     French,
+
+    /// German language
     #[serde(rename = "de")]
     German,
+
+    /// Italian language
     #[serde(rename = "it")]
     Italian,
+
+    /// Portuguese language
     #[serde(rename = "pt")]
     Portuguese,
+
+    /// Japanese language
     #[serde(rename = "ja")]
     Japanese,
+
+    /// Korean language
     #[serde(rename = "ko")]
     Korean,
+
+    /// Russian language
     #[serde(rename = "ru")]
     Russian,
+
+    /// Chinese (Simplified) language
     #[serde(rename = "zhs")]
     SimplifiedChinese,
+
+    /// Chinese (Traditional) language
     #[serde(rename = "zht")]
     TraditionalChinese,
+
+    /// Hebrew language
     #[serde(rename = "he")]
     Hebrew,
+
+    /// Latin language
     #[serde(rename = "la")]
     Latin,
 
-    /// Ancient Greek is used on some Theros cards
+    /// Ancient Greek language
+    ///
+    /// Used on some Theros cards
     #[serde(rename = "grc")]
     AncientGreek,
+
+    /// Arabic language
     #[serde(rename = "ar")]
     Arabic,
+
+    /// Sanskrit language
     #[serde(rename = "sa")]
     Sanskrit,
 
-    /// Phyrexian is used on special Phyrexian-edition cards
+    /// Phyrexian language
+    ///
+    /// Used on special Phyrexian-edition cards
     #[serde(rename = "ph")]
     Phyrexian,
 
-    /// Quenya (Elvish) is used on special Lord of the Rings and The Hobbit cards
+    /// Quenya (Elvish) language (Lord of the Rings)
+    ///
+    /// Used on special Lord of the Rings and The Hobbit cards
     #[serde(rename = "qya")]
     Quenya,
 }
@@ -1007,7 +1042,7 @@ impl std::fmt::Display for Layout {
     }
 }
 
-/// The role a [`super::RelatedCard`] plays
+/// The role a [`RelatedCard`][`super::RelatedCard`] plays
 #[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum RelatedCardRole {
@@ -1039,11 +1074,22 @@ impl std::fmt::Display for RelatedCardRole {
 #[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum SecurityStamp {
+    /// Oval stamp
     Oval,
+
+    /// Triangle stamp
     Triangle,
+
+    /// Acorn stamp
     Acorn,
+
+    /// Circle stamp
     Circle,
+
+    /// Arena stamp
     Arena,
+
+    /// Heart stamp
     Heart,
 }
 
@@ -1172,7 +1218,10 @@ impl std::fmt::Display for SetType {
 #[derive(Debug, Copy, Clone, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum MigrationPlan {
+    /// Old Scryfall ID is replaced with a new ID
     Merge,
+
+    /// The given UUID is being discarded and no replacement is being provided
     Delete,
 }
 

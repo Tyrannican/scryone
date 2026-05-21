@@ -1,4 +1,9 @@
+#![deny(missing_docs)]
+#![deny(missing_debug_implementations)]
 //! # Scryone
+//!
+//! Crate for providing an API Client, Types, and Request objects for working with the [Scryfall
+//! API](https://scryfall.com/docs/api)
 
 pub mod api;
 pub mod objects;

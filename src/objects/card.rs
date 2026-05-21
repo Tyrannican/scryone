@@ -256,7 +256,7 @@ pub struct Card {
     /// The type of set this printing is in
     pub set_type: String,
 
-    /// A link to this card's [`super::Set`] object on Scryfall's API
+    /// A link to this card's [`Set`][`super::Set`] object on Scryfall's API
     pub set_uri: Url,
 
     /// This card's set code
