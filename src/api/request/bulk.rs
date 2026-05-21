@@ -84,7 +84,7 @@ impl ScryfallRequest for BulkDataFromIdRequest {
     fn to_url(&self) -> Result<url::Url, ScryfallApiError> {
         let mut url = Url::parse(BASE_URL)?;
         let path = match self.data_type {
-            BulkDataId::Id(id) => format!("/bulk-data/{}", id.to_string()),
+            BulkDataId::Id(id) => format!("/bulk-data/{}", id),
             BulkDataId::Type(ty) => {
                 format!("/bulk-data/{}", ty.to_string().replace("_", "-"))
             }

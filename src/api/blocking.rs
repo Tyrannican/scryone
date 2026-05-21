@@ -84,3 +84,9 @@ impl ScryfallClient {
         self.rt.block_on(self.inner.get(request))
     }
 }
+
+impl Default for ScryfallClient {
+    fn default() -> Self {
+        Self::new()
+    }
+}

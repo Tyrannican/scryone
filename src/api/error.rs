@@ -42,4 +42,8 @@ pub enum ScryfallApiError {
     /// HTTP 400 Error
     #[error("bad request: {0}")]
     BadRequest(String),
+
+    /// HTTP 429 Error
+    #[error("too many requests")]
+    TooManyRequests,
 }

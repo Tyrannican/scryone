@@ -2,8 +2,6 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::objects::{list::List, set::Set};
-
 /// Exhaustive representation of a Mana Color in Magic: the Gathering
 ///
 /// The main colors are `WUBRGC` with `T` being present on a single card but is still represented

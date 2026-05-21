@@ -4,18 +4,13 @@ pub mod blocking;
 pub mod error;
 pub mod request;
 
-use std::{any::Any, time::Duration};
-
 pub use error::ScryfallApiError;
 pub use request::{ScryfallPostRequest, ScryfallRequest};
 
 use reqwest::{Client, IntoUrl, StatusCode};
 use serde::de::DeserializeOwned;
 
-use crate::{
-    api::request::PaginatedRequest,
-    objects::{List, error::ScryfallError},
-};
+use crate::{api::request::PaginatedRequest, objects::error::ScryfallError};
 
 const SCRYFALL_USER_AGENT: &str = "scryone-agent";
 const ACCEPT_HEADER: &str = "application/json;q=0.9,*/*;q=0.8";
@@ -48,15 +43,30 @@ impl ScryfallClient {
         &self,
         url: impl IntoUrl,
     ) -> Result<T, ScryfallApiError> {
-        self.client
+        let response = self
+            .client
             .get(url)
             .header("User-Agent", SCRYFALL_USER_AGENT)
             .header("Accept", ACCEPT_HEADER)
             .send()
-            .await?
-            .json::<T>()
+            .await?;
+        let status = response.status();
+
+        if status.is_success() {
+            return Ok(response.json::<T>().await?);
+        }
+
+        let body: ScryfallError = response
+            .json()
             .await
-            .map_err(|e| ScryfallApiError::ApiCall(e))
+            .map_err(|_| ScryfallApiError::InvalidResponse(status))?;
+
+        match status {
+            StatusCode::NOT_FOUND => Err(ScryfallApiError::NotFound(body.details)),
+            StatusCode::BAD_REQUEST => Err(ScryfallApiError::BadRequest(body.details)),
+            StatusCode::TOO_MANY_REQUESTS => Err(ScryfallApiError::TooManyRequests),
+            _ => Err(ScryfallApiError::InvalidResponse(status)),
+        }
     }
 
     /// Makes a paginaged GET request to a Scryfall endpoint depending on the `ScryfallRequest`
@@ -111,9 +121,7 @@ impl ScryfallClient {
         let status = response.status();
 
         if status.is_success() {
-            let t = response.json::<R::Response>().await?;
-            todo!()
-            // return Ok(response.json::<R::Response>().await?);
+            return Ok(response.json::<R::Response>().await?);
         }
 
         let body: ScryfallError = response
@@ -124,6 +132,7 @@ impl ScryfallClient {
         match status {
             StatusCode::NOT_FOUND => Err(ScryfallApiError::NotFound(body.details)),
             StatusCode::BAD_REQUEST => Err(ScryfallApiError::BadRequest(body.details)),
+            StatusCode::TOO_MANY_REQUESTS => Err(ScryfallApiError::TooManyRequests),
             _ => Err(ScryfallApiError::InvalidResponse(status)),
         }
     }
@@ -161,7 +170,14 @@ impl ScryfallClient {
         match status {
             StatusCode::NOT_FOUND => Err(ScryfallApiError::NotFound(body.details)),
             StatusCode::BAD_REQUEST => Err(ScryfallApiError::BadRequest(body.details)),
+            StatusCode::TOO_MANY_REQUESTS => Err(ScryfallApiError::TooManyRequests),
             _ => Err(ScryfallApiError::InvalidResponse(status)),
         }
+    }
+}
+
+impl Default for ScryfallClient {
+    fn default() -> Self {
+        Self::new()
     }
 }
