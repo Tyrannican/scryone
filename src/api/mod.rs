@@ -24,6 +24,7 @@ const ACCEPT_HEADER: &str = "application/json;q=0.9,*/*;q=0.8";
 /// have to and automatically deserialise the response to the expected format.
 ///
 /// The generalised requests require a URL and for the response type to be given.
+#[derive(Debug)]
 pub struct ScryfallClient {
     client: Client,
 }

@@ -87,7 +87,7 @@ impl ScryfallRequest for RulingRequest {
 }
 
 /// Builder for constructing a [`RulingRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct RulingRequestBuilder {
     id: RulingId,
     format: Option<DataFormat>,
@@ -127,9 +127,10 @@ impl RulingRequestBuilder {
     /// Builds the [`RulingRequest`]
     pub fn build(self) -> Result<RulingRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(RulingRequest {
             id: self.id,

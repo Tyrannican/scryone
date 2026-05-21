@@ -38,7 +38,7 @@ impl ScryfallRequest for BulkDataRequest {
 }
 
 /// Builder for constructing a [`BulkDataRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct BulkDataRequestBuilder {
     pretty: Option<bool>,
 }
@@ -99,7 +99,7 @@ impl ScryfallRequest for BulkDataFromIdRequest {
 }
 
 /// Builder for constructing a [`BulkDataFromIdRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct BulkDataFromIdRequestBuilder {
     data_type: BulkDataId,
     format: Option<DataFormat>,
@@ -140,9 +140,10 @@ impl BulkDataFromIdRequestBuilder {
     /// Build the [`BulkDataFromIdRequest`]
     pub fn build(self) -> Result<BulkDataFromIdRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json | DataFormat::File) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json | DataFormat::File)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(BulkDataFromIdRequest {
             data_type: self.data_type,

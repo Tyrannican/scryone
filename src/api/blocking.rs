@@ -25,6 +25,7 @@ use tokio::runtime::{Builder, Runtime};
 /// have to and automatically deserialise the response to the expected format.
 ///
 /// The generalised requests require a URL and for the response type to be given.
+#[derive(Debug)]
 pub struct ScryfallClient {
     inner: AsyncScryfallClient,
     rt: Runtime,

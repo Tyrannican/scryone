@@ -34,7 +34,7 @@ impl ScryfallRequest for SetsRequest {
 }
 
 /// Builder for constructing a [`SetsRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct SetsRequestBuilder {
     format: Option<DataFormat>,
     pretty: Option<bool>,
@@ -64,9 +64,10 @@ impl SetsRequestBuilder {
     /// Builds the [`SetsRequest`]
     pub fn build(self) -> Result<SetsRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(SetsRequest {
             format: self.format,
@@ -142,7 +143,7 @@ impl ScryfallRequest for SetFromIdRequest {
 }
 
 /// Builder for constructing [`SetFromIdRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct SetFromIdRequestBuilder {
     id: SetId,
     format: Option<DataFormat>,
@@ -184,9 +185,10 @@ impl SetFromIdRequestBuilder {
     /// Builds the [`SetFromIdRequest`]
     pub fn build(self) -> Result<SetFromIdRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(SetFromIdRequest {
             id: self.id,

@@ -32,7 +32,7 @@ impl ScryfallRequest for CatalogRequest {
 }
 
 /// Builder for constructing a [`CatalogRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct CatalogRequestBuilder {
     catalog_type: CatalogType,
 }

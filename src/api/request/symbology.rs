@@ -36,7 +36,7 @@ impl ScryfallRequest for SymbolListRequest {
 }
 
 /// Builder for constructing a [`SymbolListRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct SymbolListRequestBuilder {
     format: Option<DataFormat>,
     pretty: Option<bool>,
@@ -66,9 +66,10 @@ impl SymbolListRequestBuilder {
     /// Builds the [`SymbolListRequest`]
     pub fn build(self) -> Result<SymbolListRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(SymbolListRequest {
             format: self.format,
@@ -109,7 +110,7 @@ impl ScryfallRequest for ParseManaRequest {
 }
 
 /// Builder for constructing a [`ParseManaRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct ParseManaRequestBuilder {
     cost: String,
     format: Option<DataFormat>,
@@ -153,9 +154,10 @@ impl ParseManaRequestBuilder {
         }
 
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(ParseManaRequest {
             cost: self.cost,

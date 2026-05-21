@@ -67,7 +67,7 @@ impl ScryfallRequest for CardSearchRequest {
 }
 
 /// Builder for constructing a [`CardSearchRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct CardSearchRequestBuilder {
     query: String,
     unique: Option<UniqueMode>,
@@ -157,9 +157,10 @@ impl CardSearchRequestBuilder {
     /// Build the [`CardSearchRequest`]
     pub fn build(self) -> Result<CardSearchRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json | DataFormat::Csv) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json | DataFormat::Csv)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(CardSearchRequest {
             query: self.query,
@@ -225,7 +226,7 @@ impl ScryfallRequest for NamedCardRequest {
 }
 
 /// Builder for constructing a [`NamedCardRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct NamedCardRequestBuilder {
     exact: Option<String>,
     fuzzy: Option<String>,
@@ -299,9 +300,10 @@ impl NamedCardRequestBuilder {
         }
 
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(NamedCardRequest {
             exact: self.exact,
@@ -354,7 +356,7 @@ impl ScryfallRequest for CardAutoCompleteRequest {
 }
 
 /// Builder for constructing a [`CardAutoCompleteRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct CardAutoCompleteRequestBuilder {
     query: String,
     format: Option<DataFormat>,
@@ -401,9 +403,10 @@ impl CardAutoCompleteRequestBuilder {
     /// Builds the [`CardAutoCompleteRequest`]
     pub fn build(self) -> Result<CardAutoCompleteRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(CardAutoCompleteRequest {
             query: self.query,
@@ -452,7 +455,7 @@ impl ScryfallRequest for RandomCardRequest {
 }
 
 /// Builder for constructing a [`RandomCardRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct RandomCardRequestBuilder {
     query: Option<String>,
     format: Option<DataFormat>,
@@ -505,9 +508,10 @@ impl RandomCardRequestBuilder {
     /// Builds the [`RandomCardRequest`]
     pub fn build(self) -> Result<RandomCardRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(RandomCardRequest {
             query: self.query,
@@ -558,7 +562,7 @@ impl ScryfallPostRequest for CardCollectionRequest {
 }
 
 /// Builder for constructing a [`CardCollectionRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct CardCollectionRequestBuilder {
     identifiers: Vec<CardIdentifier>,
     pretty: Option<bool>,
@@ -644,7 +648,7 @@ impl ScryfallRequest for CardBySetAndIdRequest {
 }
 
 /// Builder for constructing a [`CardBySetAndIdRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct CardBySetAndIdRequestBuilder {
     set_code: String,
     collector_number: String,
@@ -715,9 +719,10 @@ impl CardBySetAndIdRequestBuilder {
     /// Builds the [`CardBySetAndIdRequest`]
     pub fn build(self) -> Result<CardBySetAndIdRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(CardBySetAndIdRequest {
             set_code: self.set_code,
@@ -821,7 +826,7 @@ impl ScryfallRequest for CardFromIdRequest {
 }
 
 /// Builder for constructing a [`CardFromIdRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct CardFromIdRequestBuilder {
     id: CardId,
     format: Option<DataFormat>,
@@ -877,9 +882,10 @@ impl CardFromIdRequestBuilder {
     /// Builds the [`CardFromIdRequest`]
     pub fn build(self) -> Result<CardFromIdRequest, ScryfallApiError> {
         if let Some(fmt) = self.format
-            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image) {
-                return Err(ScryfallApiError::InvalidDataFormat(fmt));
-            }
+            && !matches!(fmt, DataFormat::Json | DataFormat::Text | DataFormat::Image)
+        {
+            return Err(ScryfallApiError::InvalidDataFormat(fmt));
+        }
 
         Ok(CardFromIdRequest {
             id: self.id,

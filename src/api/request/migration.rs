@@ -37,7 +37,7 @@ impl ScryfallRequest for MigrationRequest {
 }
 
 /// Builder for constructing a [`MigrationRequest`]
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct MigrationRequestBuilder {
     page: u32,
 }
@@ -86,6 +86,7 @@ impl ScryfallRequest for MigrationByIdRequest {
 }
 
 /// Builder for constructing a [`MigrationByIdRequest`]
+#[derive(Debug)]
 pub struct MigrationByIdRequestBuilder {
     id: Uuid,
 }
