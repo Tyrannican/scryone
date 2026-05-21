@@ -54,7 +54,7 @@ impl ScryfallClient {
     /// provided
     ///
     /// This will work on requests that return a `List<T>` type and will follow the pages until
-    /// there are no more and return the data in a single Vec<T>
+    /// there are no more and return the data in a single `Vec<T>`
     pub fn paginated<R>(
         &self,
         request: R,
