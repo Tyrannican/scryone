@@ -148,12 +148,12 @@ pub struct Card {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub game_changer: Option<bool>,
 
-    /// This card's hand modifier, if it is Vanguard ard. This value will contain a delta such as
+    /// This card's hand modifier, if it is Vanguard card. This value will contain a delta such as
     /// `-1`
     #[serde(skip_serializing_if = "Option::is_none")]
     pub hand_modifier: Option<String>,
 
-    /// This card's life modifier, if it is Vanguard cars. This value will contain a delta, such as
+    /// This card's life modifier, if it is Vanguard card. This value will contain a delta, such as
     /// `+2`
     #[serde(skip_serializing_if = "Option::is_none")]
     pub life_modifier: Option<String>,
