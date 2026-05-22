@@ -49,22 +49,22 @@
 //! The clients offer the following:
 //!
 //! * GET requests to the endpoint that accepts a [`ScryfallRequest`][`api::ScryfallRequest`] that
-//! automatically constructs the URL (with parameters) for you.
+//!   automatically constructs the URL (with parameters) for you.
 //!
 //! * POST requests to endpoints that allow it (only one single API endpoints supports this as of
-//! now).
+//!   now).
 //!
 //! * Generic GET requests that allow you to define the type you wish to deserialize into (you must
-//! provide the URL)
+//!   provide the URL)
 //!
 //! * Paginated requests that automatically (and respectfully) retrieve all data from paginated
-//! responses from Scryfall.
+//!   responses from Scryfall.
 //!
 //! Example:
 //!
 //! ```rust,no_run
 //! # use scryone::api::{ScryfallClient, ScryfallApiError, request::{CardSearchRequest, UniqueMode, SortOrder, SortDirection,
-//! # DataFormat};
+//! # DataFormat}};
 //! # async fn main() -> Result<(), ScryfallApiError> {
 //! let client = ScryfallClient::new();
 //! let request = CardSearchRequest::builder()
