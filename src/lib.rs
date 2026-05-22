@@ -16,7 +16,8 @@
 //! ## Requests
 //!
 //! Scryfall has many endpoints for different aspects of their API.
-//! To help you execute queries against certain endpoints, `scryone` provides Request types and
+//! To help you execute queries against certain endpoints, `scryone` provides
+//! [`Request`][`api::request`] types and
 //! builders for them which allow you to set all parameters that Scryfall allows.
 //!
 //! Each Request type implements a trait called [`ScryfallRequest`][`api::ScryfallRequest`] which automatically builds the appropriate URL
@@ -44,7 +45,7 @@
 //!
 //! ## API Clients
 //!
-//! An asynchronous and blocking client are supplied to enable you to contact Scryfall's API.
+//! An [`asynchronous`][`api::ScryfallClient`] and [`blocking`][`api::blocking::ScryfallClient`] client are supplied to enable you to contact Scryfall's API.
 //!
 //! The clients offer the following:
 //!
@@ -65,6 +66,7 @@
 //! ```rust,no_run
 //! # use scryone::api::{ScryfallClient, ScryfallApiError, request::{CardSearchRequest, UniqueMode, SortOrder, SortDirection,
 //! # DataFormat}};
+//! # use scryone::objects::{List, Card};
 //! # async fn main() -> Result<(), ScryfallApiError> {
 //! let client = ScryfallClient::new();
 //! let request = CardSearchRequest::builder()
@@ -76,7 +78,7 @@
 //!     .build()?;
 //!
 //! // Automatically constructs the appropriate URL for the `/cards/search` endpoint
-//! let response = client.get(request).await?;
+//! let response: List<Card> = client.get(request).await?;
 //! println!("Total cards: {}", response.total_cards);
 //! println!("Cards: {:?}", response.data);
 //! # Ok(())
