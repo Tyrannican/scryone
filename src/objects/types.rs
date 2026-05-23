@@ -661,6 +661,12 @@ pub enum FrameEffect {
     /// Extended art frame
     ExtendedArt,
 
+    /// Dazzle-foil Frame
+    DazzleFoil,
+
+    /// Textless Frame
+    Textless,
+
     /// Companion frame
     Companion,
 
@@ -708,6 +714,7 @@ impl std::fmt::Display for FrameEffect {
             Self::OriginPwDfc => write!(f, "originpwdfc"),
             Self::MoonEldraziDfc => write!(f, "mooneldrazidfc"),
             Self::WaxingAndWaningMoonDfc => write!(f, "waxingandwaningmoondfc"),
+            Self::DazzleFoil => write!(f, "dazzlefoil"),
             Self::Showcase => write!(f, "showcase"),
             Self::ExtendedArt => write!(f, "extendedart"),
             Self::Companion => write!(f, "companion"),
@@ -717,6 +724,7 @@ impl std::fmt::Display for FrameEffect {
             Self::ShatteredGlass => write!(f, "shatteredglass"),
             Self::ConvertDfc => write!(f, "convertdfc"),
             Self::FanDfc => write!(f, "fandfc"),
+            Self::Textless => write!(f, "textless"),
             Self::UpsideDownDfc => write!(f, "upsidedowndfc"),
             Self::Spree => write!(f, "spree"),
             Self::FullArt => write!(f, "fullart"),
@@ -1007,7 +1015,7 @@ pub enum Layout {
     ArtSeries,
 
     /// Card with two sides that are unrelated
-    Reversible,
+    ReversibleCard,
 }
 
 impl std::fmt::Display for Layout {
@@ -1037,7 +1045,7 @@ impl std::fmt::Display for Layout {
             Self::Augment => write!(f, "augment"),
             Self::Host => write!(f, "host"),
             Self::ArtSeries => write!(f, "art_series"),
-            Self::Reversible => write!(f, "reversible_card"),
+            Self::ReversibleCard => write!(f, "reversible_card"),
         }
     }
 }

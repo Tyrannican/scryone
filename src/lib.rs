@@ -100,10 +100,11 @@ mod parse_test {
     use objects::{BulkDataType, Card};
 
     #[test]
+    #[ignore = "downloads all cards from Scryfall, significant download time"]
     fn deserialises_all_cards_successfully() -> Result<(), ScryfallApiError> {
         let client = ScryfallClient::new();
         let req = BulkDataFromIdRequest::builder()
-            .data_type(BulkDataId::Type(BulkDataType::OracleCards))
+            .data_type(BulkDataId::Type(BulkDataType::AllCards))
             .build()?;
 
         let response = client.get(req)?;

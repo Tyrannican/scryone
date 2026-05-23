@@ -93,7 +93,8 @@ pub struct Card {
 
     // Gameplay fields
     /// This card's mana value (Some `funny` cards have fractional costs)
-    pub cmc: f32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cmc: Option<f32>,
 
     /// The name of this card. If this card has multiple faces, this field will contain both names
     /// separated by `␣//␣`
@@ -107,7 +108,8 @@ pub struct Card {
     pub reserved: bool,
 
     /// The type line of this card (e.g. Artifact Creature - Human Artificer)
-    pub type_line: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub type_line: Option<String>,
 
     /// Describes the legality of this card across play formats ([`LegalStatus`])
     pub legalities: Legality,
