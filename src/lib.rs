@@ -67,6 +67,7 @@
 //! # use scryone::api::{ScryfallClient, ScryfallApiError, request::{CardSearchRequest, UniqueMode, SortOrder, SortDirection,
 //! # DataFormat}};
 //! # use scryone::objects::{List, Card};
+//! # #[tokio::main]
 //! # async fn main() -> Result<(), ScryfallApiError> {
 //! let client = ScryfallClient::new();
 //! let request = CardSearchRequest::builder()
@@ -78,8 +79,8 @@
 //!     .build()?;
 //!
 //! // Automatically constructs the appropriate URL for the `/cards/search` endpoint
-//! let response: List<Card> = client.get(request).await?;
-//! println!("Total cards: {}", response.total_cards);
+//! let response: List<Vec<Card>> = client.get(request).await?;
+//! println!("Total cards: {:?}", response.total_cards);
 //! println!("Cards: {:?}", response.data);
 //! # Ok(())
 //! # }
@@ -89,7 +90,7 @@ pub mod api;
 pub mod objects;
 
 #[cfg(test)]
-mod parse_test {
+mod full_deser_test {
     use super::*;
 
     use api::{
@@ -100,7 +101,22 @@ mod parse_test {
     use objects::{BulkDataType, Card};
 
     #[test]
-    #[ignore = "downloads all cards from Scryfall, significant download time"]
+    #[ignore = "downloads oracle cards from Scryfall - significant download time"]
+    fn deserialises_oracle_cards_successfully() -> Result<(), ScryfallApiError> {
+        let client = ScryfallClient::new();
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::OracleCards))
+            .build()?;
+
+        let response = client.get(req)?;
+        let cards: Result<Vec<Card>, ScryfallApiError> = client.call(response.download_uri);
+        assert!(cards.is_ok());
+
+        Ok(())
+    }
+
+    #[test]
+    #[ignore = "downloads all cards from Scryfall - significant download time"]
     fn deserialises_all_cards_successfully() -> Result<(), ScryfallApiError> {
         let client = ScryfallClient::new();
         let req = BulkDataFromIdRequest::builder()
@@ -109,10 +125,8 @@ mod parse_test {
 
         let response = client.get(req)?;
         let cards: Result<Vec<Card>, ScryfallApiError> = client.call(response.download_uri);
-        if !cards.is_ok() {
-            eprintln!("{cards:?}");
-        }
         assert!(cards.is_ok());
+
         Ok(())
     }
 }
