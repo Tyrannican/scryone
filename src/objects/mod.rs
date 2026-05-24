@@ -28,8 +28,11 @@ mod object_deserialisation_tests {
     use super::*;
     use serde::de::DeserializeOwned;
 
-    fn deserialise<T: DeserializeOwned>(input: &str) {
+    fn deserialise<T: DeserializeOwned + std::fmt::Debug>(input: &str) {
         let obj = serde_json::from_str::<T>(&input);
+        if !obj.is_ok() {
+            eprintln!("{obj:?}");
+        }
         assert!(obj.is_ok());
     }
 
@@ -267,5 +270,116 @@ mod object_deserialisation_tests {
     }"#;
 
         deserialise::<List<Card>>(&raw);
+    }
+
+    #[test]
+    fn migration() {
+        let strats = vec!["merge", "delete"];
+        let raw = r#"    {
+      "object": "migration",
+      "id": "f75b2d8b-c73b-4352-91f7-3b9239bd3c9f",
+      "uri": "https://api.scryfall.com/migrations/f75b2d8b-c73b-4352-91f7-3b9239bd3c9f",
+      "performed_at": "2026-05-07",
+      "migration_strategy": "merge",
+      "old_scryfall_id": "c765c1a3-5bc3-46ff-9818-842815c52984",
+      "new_scryfall_id": "f064a5ff-7139-45e3-9012-cf666e4984c4",
+      "note": "Double entry",
+      "metadata": {
+        "id": "c765c1a3-5bc3-46ff-9818-842815c52984",
+        "lang": "en",
+        "name": "Wisdom of Ages",
+        "set_code": "psos",
+        "oracle_id": "d9722ec3-aa5e-4c69-8ff0-cef1b1839fa4",
+        "collector_number": "368p"
+      }
+    }"#;
+
+        for s in strats {
+            let raw = raw.replace(
+                "\"migration_strategy\": \"merge\"",
+                &format!("\"migration_strategy\": \"{s}\""),
+            );
+
+            deserialise::<CardMigration>(&raw);
+        }
+    }
+
+    #[test]
+    fn ruling() {
+        let raw = r#"    {
+      "object": "ruling",
+      "oracle_id": "afa49a09-146f-4439-850e-dd1938c93cef",
+      "source": "scryfall",
+      "published_at": "2015-01-19",
+      "comment": "Derevi, Empyrial Tactician is banned as a commander in Duel Commander format, but it may be part of your deck."
+    }"#;
+
+        let sources = vec!["wotc", "scryfall"];
+        for s in sources {
+            let raw = raw.replace("\"source\": \"scryfall\"", &format!("\"source\": \"{s}\""));
+            deserialise::<Ruling>(&raw);
+        }
+    }
+
+    #[test]
+    fn sets() {
+        let raw = r#"{
+  "object": "set",
+  "id": "385e11a4-492b-4d07-b4a6-a1409ef829b8",
+  "code": "mmq",
+  "mtgo_code": "mm",
+  "arena_code": "mm",
+  "tcgplayer_id": 73,
+  "name": "Mercadian Masques",
+  "uri": "https://api.scryfall.com/sets/385e11a4-492b-4d07-b4a6-a1409ef829b8",
+  "scryfall_uri": "https://scryfall.com/sets/mmq",
+  "search_uri": "https://api.scryfall.com/cards/search?include_extras=true&include_variations=true&order=set&q=e%3Ammq&unique=prints",
+  "released_at": "1999-10-04",
+  "set_type": "expansion",
+  "card_count": 350,
+  "printed_size": 350,
+  "digital": false,
+  "nonfoil_only": false,
+  "foil_only": false,
+  "block_code": "mmq",
+  "block": "Masques",
+  "icon_svg_uri": "https://svgs.scryfall.io/sets/mmq.svg?1779076800"
+}"#;
+
+        let set_types = vec![
+            SetType::Core,
+            SetType::Expansion,
+            SetType::Masters,
+            SetType::Eternal,
+            SetType::Alchemy,
+            SetType::Masterpiece,
+            SetType::Arsenal,
+            SetType::FromTheVault,
+            SetType::Spellbook,
+            SetType::PremiumDeck,
+            SetType::DuelDeck,
+            SetType::DraftInnovation,
+            SetType::TreasureChest,
+            SetType::Commander,
+            SetType::Planechase,
+            SetType::Archenemy,
+            SetType::Vanguard,
+            SetType::Funny,
+            SetType::Starter,
+            SetType::Box,
+            SetType::Promo,
+            SetType::Token,
+            SetType::Memorabilia,
+            SetType::Minigame,
+        ];
+
+        for st in set_types {
+            let raw = raw.replace(
+                "\"set_type\": \"expansion\"",
+                &format!("\"set_type\": \"{}\"", st.to_string()),
+            );
+
+            deserialise::<Set>(&raw);
+        }
     }
 }
