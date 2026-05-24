@@ -671,7 +671,64 @@ where
     let Some(raw) = raw.filter(|s| !s.is_empty()) else {
         return Ok(Vec::new());
     };
+
     raw.split_inclusive('}')
         .map(|c| CostSymbol::deserialize(c.into_deserializer()))
         .collect::<Result<Vec<_>, _>>()
+}
+
+#[cfg(test)]
+mod card_object_tests {
+    use crate::api::{
+        ScryfallApiError,
+        blocking::ScryfallClient,
+        request::{BulkDataFromIdRequest, BulkDataId},
+    };
+    use crate::objects::{BulkDataType, Card};
+
+    fn bulk_data_download(bdt: BulkDataType) -> Result<Vec<Card>, ScryfallApiError> {
+        let client = ScryfallClient::new();
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(bdt))
+            .build()?;
+
+        let response = client.get(req)?;
+        client.call(response.download_uri)
+    }
+
+    #[test]
+    #[ignore = "downloads oracle cards from Scryfall - significant download time"]
+    fn oracle_cards() -> Result<(), ScryfallApiError> {
+        let cards = bulk_data_download(BulkDataType::OracleCards);
+        assert!(cards.is_ok());
+
+        Ok(())
+    }
+
+    #[test]
+    #[ignore = "downloads all cards from Scryfall - significant download time"]
+    fn all_cards() -> Result<(), ScryfallApiError> {
+        let cards = bulk_data_download(BulkDataType::AllCards);
+        assert!(cards.is_ok());
+
+        Ok(())
+    }
+
+    #[test]
+    #[ignore = "downloads unique artwork cards from Scryfall - significant download time"]
+    fn unique_artwork() -> Result<(), ScryfallApiError> {
+        let cards = bulk_data_download(BulkDataType::UniqueArtwork);
+        assert!(cards.is_ok());
+
+        Ok(())
+    }
+
+    #[test]
+    #[ignore = "downloads default cards from Scryfall - significant download time"]
+    fn default_cards() -> Result<(), ScryfallApiError> {
+        let cards = bulk_data_download(BulkDataType::DefaultCards);
+        assert!(cards.is_ok());
+
+        Ok(())
+    }
 }

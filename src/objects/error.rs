@@ -26,5 +26,5 @@ pub struct ScryfallError {
 
     /// If the input generated non-failure warnings, these are added here
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub warnings: Option<String>,
+    pub warnings: Option<Vec<String>>,
 }
