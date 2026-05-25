@@ -8,7 +8,7 @@
 //!
 //! More information can be found here: <https://scryfall.com/docs/api/card-symbols>
 
-use super::types::Color;
+use super::types::{Color, CostSymbol};
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -19,7 +19,7 @@ pub struct CardSymbol {
     pub object: String,
 
     /// The plaintext (UTF-8) symbol. Often surrounded with curly braces `{}`
-    pub symbol: String,
+    pub symbol: CostSymbol,
 
     /// An English snipped that describes this symbol
     pub english: String,

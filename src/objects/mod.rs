@@ -382,4 +382,125 @@ mod object_deserialisation_tests {
             deserialise::<Set>(&raw);
         }
     }
+
+    #[test]
+    fn symbols() {
+        //
+        let raw = r#"    {
+      "object": "card_symbol",
+      "symbol": "{T}",
+      "svg_uri": "https://svgs.scryfall.io/card-symbols/T.svg",
+      "loose_variant": null,
+      "english": "tap this permanent",
+      "transposable": false,
+      "represents_mana": false,
+      "appears_in_mana_costs": false,
+      "mana_value": 0,
+      "hybrid": false,
+      "phyrexian": false,
+      "cmc": 0,
+      "funny": false,
+      "colors": [],
+      "gatherer_alternates": [
+        "ocT",
+        "oT"
+      ]
+    }"#;
+
+        let symbols = vec![
+            CostSymbol::Tap,
+            CostSymbol::Untap,
+            CostSymbol::Energy,
+            CostSymbol::Pawprint,
+            CostSymbol::Planeswalker,
+            CostSymbol::Chaos,
+            CostSymbol::Acorn,
+            CostSymbol::Ticket,
+            CostSymbol::XGeneric,
+            CostSymbol::YGeneric,
+            CostSymbol::ZGeneric,
+            CostSymbol::Zero,
+            CostSymbol::HalfGeneric,
+            CostSymbol::Generic,
+            CostSymbol::TwoGeneric,
+            CostSymbol::ThreeGeneric,
+            CostSymbol::FourGeneric,
+            CostSymbol::FiveGeneric,
+            CostSymbol::SixGeneric,
+            CostSymbol::SevenGeneric,
+            CostSymbol::EightGeneric,
+            CostSymbol::NineGeneric,
+            CostSymbol::TenGeneric,
+            CostSymbol::ElevenGeneric,
+            CostSymbol::TwelveGeneric,
+            CostSymbol::ThirteenGeneric,
+            CostSymbol::FourteenGeneric,
+            CostSymbol::FifteenGeneric,
+            CostSymbol::SixteenGeneric,
+            CostSymbol::SeventeenGeneric,
+            CostSymbol::EighteenGeneric,
+            CostSymbol::NineteenGeneric,
+            CostSymbol::TwentyGeneric,
+            CostSymbol::HundredGeneric,
+            CostSymbol::MillionGeneric,
+            CostSymbol::InfinityGeneric,
+            CostSymbol::WhiteOrBlue,
+            CostSymbol::WhiteOrBlack,
+            CostSymbol::BlackOrRed,
+            CostSymbol::BlackOrGreen,
+            CostSymbol::BlueOrBlack,
+            CostSymbol::BlueOrRed,
+            CostSymbol::RedOrGreen,
+            CostSymbol::RedOrWhite,
+            CostSymbol::GreenOrWhite,
+            CostSymbol::GreenOrBlue,
+            CostSymbol::BlackOrGreenPhyrexian,
+            CostSymbol::BlackOrRedPhyrexian,
+            CostSymbol::GreenOrBluePhyrexian,
+            CostSymbol::GreenOrWhitePhyrexian,
+            CostSymbol::RedOrGreenPhyrexian,
+            CostSymbol::RedOrWhitePhyrexian,
+            CostSymbol::BlueOrBlackPhyrexian,
+            CostSymbol::BlueOrRedPhyrexian,
+            CostSymbol::WhiteOrBlackPhyrexian,
+            CostSymbol::WhiteOrBluePhyrexian,
+            CostSymbol::ColorlessOrWhite,
+            CostSymbol::ColorlessOrBlue,
+            CostSymbol::ColorlessOrBlack,
+            CostSymbol::ColorlessOrRed,
+            CostSymbol::ColorlessOrGreen,
+            CostSymbol::TwoGenericOrWhite,
+            CostSymbol::TwoGenericOrBlue,
+            CostSymbol::TwoGenericOrBlack,
+            CostSymbol::TwoGenericOrRed,
+            CostSymbol::TwoGenericOrGreen,
+            CostSymbol::ColorOrPhyrexian,
+            CostSymbol::WhiteOrPhyrexian,
+            CostSymbol::BlueOrPhyrexian,
+            CostSymbol::BlackOrPhyrexian,
+            CostSymbol::RedOrPhyrexian,
+            CostSymbol::GreenOrPhyrexian,
+            CostSymbol::ColorlessOrPhyrexian,
+            CostSymbol::HalfWhite,
+            CostSymbol::HalfRed,
+            CostSymbol::White,
+            CostSymbol::Blue,
+            CostSymbol::Black,
+            CostSymbol::Red,
+            CostSymbol::Green,
+            CostSymbol::Colorless,
+            CostSymbol::Snow,
+            CostSymbol::Legendary,
+            CostSymbol::LandDrop,
+        ];
+
+        for symbol in symbols {
+            let raw = raw.replace(
+                "\"symbol\": \"{T}\"",
+                &format!("\"symbol\": \"{}\"", symbol.to_string()),
+            );
+
+            deserialise::<CardSymbol>(&raw);
+        }
+    }
 }
