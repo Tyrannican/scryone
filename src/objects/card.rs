@@ -48,7 +48,7 @@ pub struct Card {
     /// A unique ID for this card's oracle identity.
     /// This value is consistent across reprinted card editions and unique among different cards
     /// with the same name (tokens, Unstable variants etc).
-    /// Always present except for the [`Layout::Reversible`] type where it is absent.
+    /// Always present except for the [`Layout::ReversibleCard`] type where it is absent.
     /// `oracle_id` will be found on each face instead.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub oracle_id: Option<Uuid>,
