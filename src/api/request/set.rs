@@ -197,3 +197,205 @@ impl SetFromIdRequestBuilder {
         })
     }
 }
+
+#[cfg(test)]
+mod url_tests {
+    use super::*;
+    use std::str::FromStr;
+
+    #[test]
+    fn sets_request_default() {
+        let req = SetsRequest::builder().build().expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/sets");
+    }
+
+    #[test]
+    fn sets_request_pretty_only() {
+        let req = SetsRequest::builder()
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/sets?pretty=true");
+    }
+
+    #[test]
+    fn sets_request_format_only() {
+        let req = SetsRequest::builder()
+            .data_format(DataFormat::Json)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/sets?format=json");
+    }
+
+    #[test]
+    fn sets_request_format_and_pretty() {
+        let req = SetsRequest::builder()
+            .data_format(DataFormat::Json)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/sets?format=json&pretty=true"
+        );
+    }
+
+    #[test]
+    fn sets_request_rejects_csv() {
+        let err = SetsRequest::builder()
+            .data_format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /sets");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Csv)));
+    }
+
+    #[test]
+    fn sets_request_rejects_text() {
+        let err = SetsRequest::builder()
+            .data_format(DataFormat::Text)
+            .build()
+            .expect_err("Text is not a valid format for /sets");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Text)));
+    }
+
+    #[test]
+    fn sets_request_rejects_image() {
+        let err = SetsRequest::builder()
+            .data_format(DataFormat::Image)
+            .build()
+            .expect_err("Image is not a valid format for /sets");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Image)));
+    }
+
+    #[test]
+    fn sets_request_rejects_file() {
+        let err = SetsRequest::builder()
+            .data_format(DataFormat::File)
+            .build()
+            .expect_err("File is not a valid format for /sets");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::File)));
+    }
+
+    #[test]
+    fn set_default_id_is_mh2_code() {
+        let req = SetFromIdRequest::builder()
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/sets/mh2");
+    }
+
+    #[test]
+    fn set_from_id_code() {
+        let req = SetFromIdRequest::builder()
+            .id(SetId::Code("mh2".to_string()))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/sets/mh2");
+    }
+
+    #[test]
+    fn set_from_id_code_neo() {
+        let req = SetFromIdRequest::builder()
+            .id(SetId::Code("neo".to_string()))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/sets/neo");
+    }
+
+    #[test]
+    fn set_from_id_code_khm() {
+        let req = SetFromIdRequest::builder()
+            .id(SetId::Code("khm".to_string()))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/sets/khm");
+    }
+
+    #[test]
+    fn set_from_id_tcgplayer() {
+        let req = SetFromIdRequest::builder()
+            .id(SetId::TcgPlayer(1909))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/sets/tcgplayer/1909");
+    }
+
+    #[test]
+    fn set_from_id_uuid() {
+        let id = Uuid::from_str("2ec77b94-6d47-4891-a480-5d0b4e5c9372")
+            .expect("valid Scryfall set uuid");
+        let req = SetFromIdRequest::builder()
+            .id(SetId::Id(id))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/sets/2ec77b94-6d47-4891-a480-5d0b4e5c9372"
+        );
+    }
+
+    #[test]
+    fn set_from_id_with_format_and_pretty() {
+        let req = SetFromIdRequest::builder()
+            .id(SetId::Code("mh2".to_string()))
+            .format(DataFormat::Json)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/sets/mh2?format=json&pretty=true"
+        );
+    }
+
+    #[test]
+    fn set_from_id_rejects_csv() {
+        let err = SetFromIdRequest::builder()
+            .id(SetId::Code("mh2".to_string()))
+            .format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /sets/:id");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Csv)));
+    }
+
+    #[test]
+    fn set_from_id_rejects_text() {
+        let err = SetFromIdRequest::builder()
+            .id(SetId::Code("mh2".to_string()))
+            .format(DataFormat::Text)
+            .build()
+            .expect_err("Text is not a valid format for /sets/:id");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Text)));
+    }
+
+    #[test]
+    fn set_from_id_rejects_image() {
+        let err = SetFromIdRequest::builder()
+            .id(SetId::Code("mh2".to_string()))
+            .format(DataFormat::Image)
+            .build()
+            .expect_err("Image is not a valid format for /sets/:id");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Image)));
+    }
+
+    #[test]
+    fn set_from_id_rejects_file() {
+        let err = SetFromIdRequest::builder()
+            .id(SetId::Code("mh2".to_string()))
+            .format(DataFormat::File)
+            .build()
+            .expect_err("File is not a valid format for /sets/:id");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::File)));
+    }
+}

@@ -898,60 +898,454 @@ impl CardFromIdRequestBuilder {
 }
 
 #[cfg(test)]
-mod tests {
+mod url_tests {
     use super::*;
 
-    fn check_url(flag: &str, opt: impl ScryfallRequest) {
-        let url = opt.to_url();
-        assert!(url.is_ok());
-        let url = url.unwrap();
-        eprintln!("{flag}: {url}");
-    }
-
-    #[test]
-    fn it_parses_search_request() {
-        let opt = CardSearchRequestBuilder::new("austere command")
-            .unique_mode(UniqueMode::Prints)
-            .sort_direction(SortDirection::Desc)
-            .page(2)
-            .build()
-            .expect("a valid request");
-
-        check_url("SEARCH", opt);
-    }
-
-    #[test]
-    fn it_parses_named_card() {
-        let opt = NamedCardRequestBuilder::new()
-            .exact_name("austere command")
-            .image_version(ImageVersion::ArtCrop)
-            .data_format(DataFormat::Json)
-            .set_code("aes")
-            .build()
-            .expect("a valid request");
-        check_url("NAMED", opt);
-    }
-
-    #[test]
-    fn card_id() {
-        let ids = [
-            CardId::Card(
-                Uuid::from_str("56ebc372-aabd-4174-a943-c7bf59e5028d")
-                    .expect("a valid UUID format from Scryfall"),
-            ),
-            CardId::Mtgo(123),
-            CardId::CardMarket(456),
-            CardId::Arena(789),
-            CardId::TcgPlayer(012),
-        ];
-
-        for id in ids {
-            let opt = CardFromIdRequest::builder()
-                .id(id)
-                .data_format(DataFormat::Json)
-                .build()
-                .expect("a valid request");
-            check_url("CARD ID", opt);
+    fn ident(id_str: &str) -> CardIdentifier {
+        CardIdentifier {
+            id: Some(Uuid::from_str(id_str).expect("valid Scryfall card uuid")),
+            mtgo_id: None,
+            multiverse_id: None,
+            oracle_id: None,
+            illustration_id: None,
+            name: None,
+            set: None,
+            collector_number: None,
         }
+    }
+
+    #[test]
+    fn card_search_minimal() {
+        let req = CardSearchRequest::builder()
+            .query("austere command")
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/search?q=austere%20command"
+        );
+    }
+
+    #[test]
+    fn card_search_full() {
+        let req = CardSearchRequest::builder()
+            .query("foo bar")
+            .unique_mode(UniqueMode::Prints)
+            .sort_order(SortOrder::Set)
+            .sort_direction(SortDirection::Desc)
+            .include_extras(true)
+            .include_multilingual(false)
+            .include_variations(true)
+            .page(3)
+            .data_format(DataFormat::Json)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/search?q=foo%20bar&unique=prints&order=set&dir=desc&include_extras=true&include_multilingual=false&include_variations=true&page=3&format=json&pretty=true"
+        );
+    }
+
+    #[test]
+    fn card_search_csv_format_allowed() {
+        let req = CardSearchRequest::builder()
+            .query("c:r")
+            .data_format(DataFormat::Csv)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/search?q=c:r&format=csv"
+        );
+    }
+
+    #[test]
+    fn card_search_rejects_image_format() {
+        let err = CardSearchRequest::builder()
+            .query("c:r")
+            .data_format(DataFormat::Image)
+            .build()
+            .expect_err("Image is not a valid format for /cards/search");
+        assert!(matches!(
+            err,
+            ScryfallApiError::InvalidDataFormat(DataFormat::Image)
+        ));
+    }
+
+    #[test]
+    fn card_search_rejects_text_format() {
+        let err = CardSearchRequest::builder()
+            .query("c:r")
+            .data_format(DataFormat::Text)
+            .build()
+            .expect_err("Text is not a valid format for /cards/search");
+        assert!(matches!(
+            err,
+            ScryfallApiError::InvalidDataFormat(DataFormat::Text)
+        ));
+    }
+
+    #[test]
+    fn named_card_exact_minimal() {
+        let req = NamedCardRequest::builder()
+            .exact_name("austere command")
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/named?exact=austere+command"
+        );
+    }
+
+    #[test]
+    fn named_card_fuzzy_full() {
+        let req = NamedCardRequest::builder()
+            .fuzzy_search("aust com")
+            .set_code("mh2")
+            .data_format(DataFormat::Image)
+            .face("back")
+            .image_version(ImageVersion::ArtCrop)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/named?fuzzy=aust+com&set=mh2&format=image&face=back&version=art_crop&pretty=true"
+        );
+    }
+
+    #[test]
+    fn named_card_missing_exact_and_fuzzy_errors() {
+        let err = NamedCardRequest::builder()
+            .build()
+            .expect_err("either exact or fuzzy is required");
+        match err {
+            ScryfallApiError::ExpectedFieldsOneOf(fields) => {
+                assert_eq!(fields, vec!["exact".to_string(), "fuzzy".to_string()]);
+            }
+            other => panic!("unexpected error: {other:?}"),
+        }
+    }
+
+    #[test]
+    fn named_card_rejects_csv_format() {
+        let err = NamedCardRequest::builder()
+            .exact_name("a")
+            .data_format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /cards/named");
+        assert!(matches!(
+            err,
+            ScryfallApiError::InvalidDataFormat(DataFormat::Csv)
+        ));
+    }
+
+    #[test]
+    fn autocomplete_minimal() {
+        let req = CardAutoCompleteRequest::builder()
+            .query("aus")
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/autocomplete?q=aus"
+        );
+    }
+
+    #[test]
+    fn autocomplete_full() {
+        let req = CardAutoCompleteRequest::builder()
+            .query("aus")
+            .format(DataFormat::Json)
+            .pretty(true)
+            .include_extras(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/autocomplete?q=aus&format=json&pretty=true&include_extras=true"
+        );
+    }
+
+    #[test]
+    fn autocomplete_rejects_csv_format() {
+        let err = CardAutoCompleteRequest::builder()
+            .query("aus")
+            .format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /cards/autocomplete");
+        assert!(matches!(
+            err,
+            ScryfallApiError::InvalidDataFormat(DataFormat::Csv)
+        ));
+    }
+
+    #[test]
+    fn random_card_minimal() {
+        let req = RandomCardRequest::builder().build().expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/cards/random");
+    }
+
+    #[test]
+    fn random_card_full() {
+        let req = RandomCardRequest::builder()
+            .query("t:dragon")
+            .face("back")
+            .image_version(ImageVersion::Normal)
+            .data_format(DataFormat::Image)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/random?q=t%3Adragon&face=back&version=normal&format=image&pretty=true"
+        );
+    }
+
+    #[test]
+    fn random_card_rejects_csv_format() {
+        let err = RandomCardRequest::builder()
+            .data_format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /cards/random");
+        assert!(matches!(
+            err,
+            ScryfallApiError::InvalidDataFormat(DataFormat::Csv)
+        ));
+    }
+
+    #[test]
+    fn card_collection_url_pretty() {
+        let req = CardCollectionRequest::builder()
+            .identifiers(vec![ident("56ebc372-aabd-4174-a943-c7bf59e5028d")])
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/collection?pretty=true"
+        );
+    }
+
+    #[test]
+    fn card_collection_url_default() {
+        let req = CardCollectionRequest::builder()
+            .identifiers(vec![ident("56ebc372-aabd-4174-a943-c7bf59e5028d")])
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/cards/collection");
+    }
+
+    #[test]
+    fn card_collection_body_passes_through_identifiers() {
+        let ids = vec![
+            ident("56ebc372-aabd-4174-a943-c7bf59e5028d"),
+            ident("f2b9983e-20d4-4d12-9e2c-ec6d9a345787"),
+        ];
+        let req = CardCollectionRequest::builder()
+            .identifiers(ids.clone())
+            .build()
+            .expect("valid request");
+        let body = req.body();
+        assert_eq!(body.len(), 2);
+        assert_eq!(body[0].id, ids[0].id);
+        assert_eq!(body[1].id, ids[1].id);
+    }
+
+    #[test]
+    fn card_collection_rejects_empty_identifiers() {
+        let err = CardCollectionRequest::builder()
+            .identifiers(vec![])
+            .build()
+            .expect_err("identifiers cannot be empty");
+        assert!(matches!(err, ScryfallApiError::InvalidData(_)));
+    }
+
+    #[test]
+    fn card_by_set_and_id_no_lang() {
+        let req = CardBySetAndIdRequest::builder()
+            .set_code("mh2")
+            .collector_number("42")
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/cards/mh2/42");
+    }
+
+    #[test]
+    fn card_by_set_and_id_with_japanese_lang() {
+        let req = CardBySetAndIdRequest::builder()
+            .set_code("mh2")
+            .collector_number("42")
+            .language(Language::Japanese)
+            .data_format(DataFormat::Image)
+            .face("back")
+            .image_version(ImageVersion::Png)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/mh2/42/ja?format=image&face=back&version=png&pretty=true"
+        );
+    }
+
+    #[test]
+    fn card_by_set_and_id_with_spanish_lang() {
+        let req = CardBySetAndIdRequest::builder()
+            .set_code("neo")
+            .collector_number("100")
+            .language(Language::Spanish)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/cards/neo/100/es");
+    }
+
+    #[test]
+    fn card_by_set_and_id_with_phyrexian_lang() {
+        let req = CardBySetAndIdRequest::builder()
+            .set_code("one")
+            .collector_number("100")
+            .language(Language::Phyrexian)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/cards/one/100/ph");
+    }
+
+    #[test]
+    fn card_by_set_and_id_rejects_csv_format() {
+        let err = CardBySetAndIdRequest::builder()
+            .set_code("mh2")
+            .collector_number("42")
+            .data_format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /cards/:code/:number");
+        assert!(matches!(
+            err,
+            ScryfallApiError::InvalidDataFormat(DataFormat::Csv)
+        ));
+    }
+
+    #[test]
+    fn card_from_id_card_uuid() {
+        let id = Uuid::from_str("56ebc372-aabd-4174-a943-c7bf59e5028d")
+            .expect("valid Scryfall card uuid");
+        let req = CardFromIdRequest::builder()
+            .id(CardId::Card(id))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/56ebc372-aabd-4174-a943-c7bf59e5028d"
+        );
+    }
+
+    #[test]
+    fn card_from_id_mtgo() {
+        let req = CardFromIdRequest::builder()
+            .id(CardId::Mtgo(123))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/cards/mtgo/123");
+    }
+
+    #[test]
+    fn card_from_id_multiverse() {
+        let req = CardFromIdRequest::builder()
+            .id(CardId::Multiverse(456))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/multiverse/456"
+        );
+    }
+
+    #[test]
+    fn card_from_id_arena() {
+        let req = CardFromIdRequest::builder()
+            .id(CardId::Arena(789))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/cards/arena/789");
+    }
+
+    #[test]
+    fn card_from_id_tcgplayer() {
+        let req = CardFromIdRequest::builder()
+            .id(CardId::TcgPlayer(12))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/cards/tcgplayer/12");
+    }
+
+    #[test]
+    fn card_from_id_cardmarket() {
+        let req = CardFromIdRequest::builder()
+            .id(CardId::CardMarket(34))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/cards/cardmarket/34");
+    }
+
+    #[test]
+    fn card_from_id_default_card_uuid() {
+        let req = CardFromIdRequest::builder().build().expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/56ebc372-aabd-4174-a943-c7bf59e5028d"
+        );
+    }
+
+    #[test]
+    fn card_from_id_with_query_params() {
+        let req = CardFromIdRequest::builder()
+            .id(CardId::Mtgo(123))
+            .data_format(DataFormat::Image)
+            .face("back")
+            .image_version(ImageVersion::BorderCrop)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/cards/mtgo/123?format=image&face=back&version=border_crop&pretty=true"
+        );
+    }
+
+    #[test]
+    fn card_from_id_rejects_csv_format() {
+        let err = CardFromIdRequest::builder()
+            .id(CardId::Mtgo(123))
+            .data_format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /cards/:id");
+        assert!(matches!(
+            err,
+            ScryfallApiError::InvalidDataFormat(DataFormat::Csv)
+        ));
     }
 }

@@ -169,3 +169,192 @@ impl Default for BulkDataId {
         Self::Type(BulkDataType::OracleCards)
     }
 }
+
+#[cfg(test)]
+mod url_tests {
+    use super::*;
+    use std::str::FromStr;
+
+    #[test]
+    fn bulk_data_default() {
+        let req = BulkDataRequest::builder().build().expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/bulk-data");
+    }
+
+    #[test]
+    fn bulk_data_pretty_true() {
+        let req = BulkDataRequest::builder()
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/bulk-data?pretty=true"
+        );
+    }
+
+    #[test]
+    fn bulk_data_pretty_false() {
+        let req = BulkDataRequest::builder()
+            .pretty(false)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/bulk-data?pretty=false"
+        );
+    }
+
+    #[test]
+    fn bulk_data_from_id_type_oracle_cards() {
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::OracleCards))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/bulk-data/oracle-cards"
+        );
+    }
+
+    #[test]
+    fn bulk_data_from_id_type_unique_artwork() {
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::UniqueArtwork))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/bulk-data/unique-artwork"
+        );
+    }
+
+    #[test]
+    fn bulk_data_from_id_type_default_cards() {
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::DefaultCards))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/bulk-data/default-cards"
+        );
+    }
+
+    #[test]
+    fn bulk_data_from_id_type_all_cards() {
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::AllCards))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/bulk-data/all-cards");
+    }
+
+    #[test]
+    fn bulk_data_from_id_type_rulings() {
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::Rulings))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/bulk-data/rulings");
+    }
+
+    #[test]
+    fn bulk_data_from_id_uuid() {
+        let id = Uuid::from_str("27bf3214-1271-490a-bcb2-5da9c5066ef1")
+            .expect("valid Scryfall bulk data UUID");
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Id(id))
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/bulk-data/27bf3214-1271-490a-bcb2-5da9c5066ef1"
+        );
+    }
+
+    #[test]
+    fn bulk_data_from_id_format_json_pretty() {
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::UniqueArtwork))
+            .format(DataFormat::Json)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/bulk-data/unique-artwork?format=json&pretty=true"
+        );
+    }
+
+    #[test]
+    fn bulk_data_from_id_format_file() {
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::OracleCards))
+            .format(DataFormat::File)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/bulk-data/oracle-cards?format=file"
+        );
+    }
+
+    #[test]
+    fn bulk_data_from_id_uuid_with_options() {
+        let id = Uuid::from_str("27bf3214-1271-490a-bcb2-5da9c5066ef1")
+            .expect("valid Scryfall bulk data UUID");
+        let req = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Id(id))
+            .format(DataFormat::Json)
+            .pretty(false)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/bulk-data/27bf3214-1271-490a-bcb2-5da9c5066ef1?format=json&pretty=false"
+        );
+    }
+
+    #[test]
+    fn bulk_data_from_id_rejects_csv() {
+        let err = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::OracleCards))
+            .format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /bulk-data");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Csv)));
+    }
+
+    #[test]
+    fn bulk_data_from_id_rejects_text() {
+        let err = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::OracleCards))
+            .format(DataFormat::Text)
+            .build()
+            .expect_err("Text is not a valid format for /bulk-data");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Text)));
+    }
+
+    #[test]
+    fn bulk_data_from_id_rejects_image() {
+        let err = BulkDataFromIdRequest::builder()
+            .data_type(BulkDataId::Type(BulkDataType::OracleCards))
+            .format(DataFormat::Image)
+            .build()
+            .expect_err("Image is not a valid format for /bulk-data");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Image)));
+    }
+}

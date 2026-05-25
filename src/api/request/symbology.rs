@@ -166,3 +166,182 @@ impl ParseManaRequestBuilder {
         })
     }
 }
+
+#[cfg(test)]
+mod url_tests {
+    use super::*;
+
+    #[test]
+    fn symbology_default_builder_produces_bare_endpoint() {
+        let req = SymbolListRequest::builder()
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/symbology");
+    }
+
+    #[test]
+    fn symbology_pretty_only() {
+        let req = SymbolListRequest::builder()
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/symbology?pretty=true"
+        );
+    }
+
+    #[test]
+    fn symbology_format_json_only() {
+        let req = SymbolListRequest::builder()
+            .format(DataFormat::Json)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/symbology?format=json"
+        );
+    }
+
+    #[test]
+    fn symbology_format_and_pretty_combined() {
+        let req = SymbolListRequest::builder()
+            .format(DataFormat::Json)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/symbology?format=json&pretty=true"
+        );
+    }
+
+    #[test]
+    fn symbology_builder_rejects_csv() {
+        let err = SymbolListRequest::builder()
+            .format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /symbology");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Csv)));
+    }
+
+    #[test]
+    fn symbology_builder_rejects_text() {
+        let err = SymbolListRequest::builder()
+            .format(DataFormat::Text)
+            .build()
+            .expect_err("Text is not a valid format for /symbology");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Text)));
+    }
+
+    #[test]
+    fn symbology_builder_rejects_image() {
+        let err = SymbolListRequest::builder()
+            .format(DataFormat::Image)
+            .build()
+            .expect_err("Image is not a valid format for /symbology");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Image)));
+    }
+
+    #[test]
+    fn symbology_builder_rejects_file() {
+        let err = SymbolListRequest::builder()
+            .format(DataFormat::File)
+            .build()
+            .expect_err("File is not a valid format for /symbology");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::File)));
+    }
+
+    #[test]
+    fn parse_mana_simple_cost() {
+        let req = ParseManaRequest::builder()
+            .cost("3WR")
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/symbology/parse-mana?cost=3WR"
+        );
+    }
+
+    #[test]
+    fn parse_mana_complex_cost_is_percent_encoded() {
+        let req = ParseManaRequest::builder()
+            .cost("{X}{R/G}{2/U}")
+            .format(DataFormat::Json)
+            .pretty(true)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/symbology/parse-mana?cost=%7BX%7D%7BR%2FG%7D%7B2%2FU%7D&format=json&pretty=true"
+        );
+    }
+
+    #[test]
+    fn parse_mana_cost_setter_overrides_empty_default() {
+        let req = ParseManaRequestBuilder::default()
+            .cost("UU")
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/symbology/parse-mana?cost=UU"
+        );
+    }
+
+    #[test]
+    fn parse_mana_missing_cost_errors() {
+        let err = ParseManaRequestBuilder::default()
+            .build()
+            .expect_err("cost is required for /symbology/parse-mana");
+        assert!(matches!(err, ScryfallApiError::ExpectedField(ref field) if field == "cost"));
+    }
+
+    #[test]
+    fn parse_mana_rejects_csv_format() {
+        let err = ParseManaRequest::builder()
+            .cost("3R")
+            .format(DataFormat::Csv)
+            .build()
+            .expect_err("Csv is not a valid format for /symbology/parse-mana");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Csv)));
+    }
+
+    #[test]
+    fn parse_mana_rejects_text_format() {
+        let err = ParseManaRequest::builder()
+            .cost("3R")
+            .format(DataFormat::Text)
+            .build()
+            .expect_err("Text is not a valid format for /symbology/parse-mana");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Text)));
+    }
+
+    #[test]
+    fn parse_mana_rejects_image_format() {
+        let err = ParseManaRequest::builder()
+            .cost("3R")
+            .format(DataFormat::Image)
+            .build()
+            .expect_err("Image is not a valid format for /symbology/parse-mana");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::Image)));
+    }
+
+    #[test]
+    fn parse_mana_rejects_file_format() {
+        let err = ParseManaRequest::builder()
+            .cost("3R")
+            .format(DataFormat::File)
+            .build()
+            .expect_err("File is not a valid format for /symbology/parse-mana");
+        assert!(matches!(err, ScryfallApiError::InvalidDataFormat(DataFormat::File)));
+    }
+}

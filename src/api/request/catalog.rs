@@ -129,3 +129,50 @@ impl std::fmt::Display for CatalogType {
         }
     }
 }
+
+#[cfg(test)]
+mod url_tests {
+    use super::*;
+
+    #[test]
+    fn default_builder_targets_card_names() {
+        let req = CatalogRequest::builder().build().expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/catalog/card-names");
+    }
+
+    #[test]
+    fn each_catalog_type_produces_expected_url() {
+        let cases: &[(CatalogType, &str)] = &[
+            (CatalogType::CardNames, "https://api.scryfall.com/catalog/card-names"),
+            (CatalogType::ArtistNames, "https://api.scryfall.com/catalog/artist-names"),
+            (CatalogType::WordBank, "https://api.scryfall.com/catalog/word-bank"),
+            (CatalogType::SuperTypes, "https://api.scryfall.com/catalog/supertypes"),
+            (CatalogType::CardTypes, "https://api.scryfall.com/catalog/card-types"),
+            (CatalogType::ArtifactTypes, "https://api.scryfall.com/catalog/artifact-types"),
+            (CatalogType::BattleTypes, "https://api.scryfall.com/catalog/battle-types"),
+            (CatalogType::CreatureTypes, "https://api.scryfall.com/catalog/creature-types"),
+            (CatalogType::EnchantmentTypes, "https://api.scryfall.com/catalog/enchantment-types"),
+            (CatalogType::LandTypes, "https://api.scryfall.com/catalog/land-types"),
+            (CatalogType::PlaneswalkerTypes, "https://api.scryfall.com/catalog/planeswalker-types"),
+            (CatalogType::SpellTypes, "https://api.scryfall.com/catalog/spell-types"),
+            (CatalogType::Powers, "https://api.scryfall.com/catalog/powers"),
+            (CatalogType::Toughnesses, "https://api.scryfall.com/catalog/toughnesses"),
+            (CatalogType::Loyalties, "https://api.scryfall.com/catalog/loyalties"),
+            (CatalogType::KeywordAbilities, "https://api.scryfall.com/catalog/keyword-abilities"),
+            (CatalogType::KeywordActions, "https://api.scryfall.com/catalog/keyword-actions"),
+            (CatalogType::AbilityWords, "https://api.scryfall.com/catalog/ability-words"),
+            (CatalogType::FlavorWords, "https://api.scryfall.com/catalog/flavor-words"),
+            (CatalogType::Watermarks, "https://api.scryfall.com/catalog/watermarks"),
+        ];
+
+        for (catalog_type, expected) in cases {
+            let req = CatalogRequest::builder()
+                .catalog_type(*catalog_type)
+                .build()
+                .expect("valid request");
+            let url = req.to_url().expect("valid url");
+            assert_eq!(url.as_str(), *expected, "wrong url for {catalog_type:?}");
+        }
+    }
+}

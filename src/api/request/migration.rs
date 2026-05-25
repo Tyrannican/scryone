@@ -117,3 +117,112 @@ impl Default for MigrationByIdRequestBuilder {
         }
     }
 }
+
+#[cfg(test)]
+mod url_tests {
+    use super::*;
+
+    #[test]
+    fn migration_default_builder_uses_page_zero() {
+        let req = MigrationRequest::builder().build().expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/migrations?page=0");
+    }
+
+    #[test]
+    fn migration_request_page_one() {
+        let req = MigrationRequest::builder()
+            .page(1)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/migrations?page=1");
+    }
+
+    #[test]
+    fn migration_request_page_forty_two() {
+        let req = MigrationRequest::builder()
+            .page(42)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/migrations?page=42");
+    }
+
+    #[test]
+    fn migration_request_page_u32_max() {
+        let req = MigrationRequest::builder()
+            .page(u32::MAX)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/migrations?page=4294967295"
+        );
+    }
+
+    #[test]
+    fn migration_request_new_with_page() {
+        let req = MigrationRequestBuilder::new(7)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(url.as_str(), "https://api.scryfall.com/migrations?page=7");
+    }
+
+    #[test]
+    fn migration_by_id_default_builder_uses_known_uuid() {
+        let req = MigrationByIdRequestBuilder::default()
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/migrations/6697b38a-ee19-455c-b24b-d0a659782d8b"
+        );
+    }
+
+    #[test]
+    fn migration_by_id_request_explicit_uuid() {
+        let id = Uuid::from_str("6697b38a-ee19-455c-b24b-d0a659782d8b")
+            .expect("valid Scryfall migration uuid");
+        let req = MigrationByIdRequest::builder()
+            .id(id)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/migrations/6697b38a-ee19-455c-b24b-d0a659782d8b"
+        );
+    }
+
+    #[test]
+    fn migration_by_id_request_alternate_uuid() {
+        let id = Uuid::from_str("00000000-0000-0000-0000-000000000001")
+            .expect("valid synthetic uuid");
+        let req = MigrationByIdRequest::builder()
+            .id(id)
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/migrations/00000000-0000-0000-0000-000000000001"
+        );
+    }
+
+    #[test]
+    fn migration_by_id_request_nil_uuid() {
+        let req = MigrationByIdRequest::builder()
+            .id(Uuid::nil())
+            .build()
+            .expect("valid request");
+        let url = req.to_url().expect("valid url");
+        assert_eq!(
+            url.as_str(),
+            "https://api.scryfall.com/migrations/00000000-0000-0000-0000-000000000000"
+        );
+    }
+}
