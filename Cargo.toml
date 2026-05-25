@@ -2,6 +2,13 @@
 name = "scryone"
 version = "0.1.0"
 edition = "2024"
+authors = ["Graham Keenan <graham.keenan@outlook.com>"]
+license = "MIT OR Apache-2.0"
+description = "API Client for Scryfall (Magic: the Gathering Search API)"
+readme = "README.md"
+repository = "https://github.com/Tyrannican/scryone"
+keywords = ["magic", "mtg", "scryfall"]
+categories = ["web-programming", "web-programming::http-client", "data-structures", "api-bindings"]
 
 [dependencies]
 jiff = { version = "0.2.24", features = ["serde"] }
