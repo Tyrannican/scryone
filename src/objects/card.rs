@@ -5,6 +5,7 @@ use jiff::civil::Date;
 use serde::{
     Deserialize, Serialize,
     de::{Deserializer, IntoDeserializer},
+    ser::Serializer,
 };
 use std::collections::HashMap;
 use url::Url;
@@ -170,6 +171,7 @@ pub struct Card {
     #[serde(
         default,
         deserialize_with = "parse_mana_cost_opt",
+        serialize_with = "serialize_mana_cost_opt",
         skip_serializing_if = "Option::is_none"
     )]
     pub mana_cost: Option<Vec<CostSymbol>>,
@@ -379,7 +381,10 @@ pub struct PreviewInformation {
 pub struct CardFace {
     /// The mana cost for this face. This value will be any empty string `""` if the cost is
     /// absent.
-    #[serde(deserialize_with = "parse_mana_cost")]
+    #[serde(
+        deserialize_with = "parse_mana_cost",
+        serialize_with = "serialize_mana_cost"
+    )]
     pub mana_cost: Vec<CostSymbol>,
 
     /// The name of this particular face
@@ -675,6 +680,27 @@ where
     raw.split_inclusive('}')
         .map(|c| CostSymbol::deserialize(c.into_deserializer()))
         .collect::<Result<Vec<_>, _>>()
+}
+
+fn serialize_mana_cost<S>(cost: &[CostSymbol], serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    let full: String = cost.iter().map(|s| s.to_string()).collect();
+    serializer.serialize_str(&full)
+}
+
+fn serialize_mana_cost_opt<S>(
+    cost: &Option<Vec<CostSymbol>>,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    match cost {
+        Some(cost) => serialize_mana_cost(cost, serializer),
+        None => serializer.serialize_none(),
+    }
 }
 
 #[cfg(test)]
