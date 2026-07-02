@@ -37,6 +37,34 @@ impl ScryfallClient {
         }
     }
 
+    /// Call a generic endpoint and returns the raw bytes of the response
+    pub async fn call_raw(&self, url: impl IntoUrl) -> Result<Vec<u8>, ScryfallApiError> {
+        let response = self
+            .client
+            .get(url)
+            .header("User-Agent", SCRYFALL_USER_AGENT)
+            .send()
+            .await?;
+
+        let status = response.status();
+        if status.is_success() {
+            let bytes = response.bytes().await?;
+            return Ok(bytes.to_vec());
+        }
+
+        let body: ScryfallError = response
+            .json()
+            .await
+            .map_err(|_| ScryfallApiError::InvalidResponse(status))?;
+
+        match status {
+            StatusCode::NOT_FOUND => Err(ScryfallApiError::NotFound(body.details)),
+            StatusCode::BAD_REQUEST => Err(ScryfallApiError::BadRequest(body.details)),
+            StatusCode::TOO_MANY_REQUESTS => Err(ScryfallApiError::TooManyRequests),
+            _ => Err(ScryfallApiError::InvalidResponse(status)),
+        }
+    }
+
     /// Call a generic endpoint that has response type `T`
     ///
     /// This is useful for download endpoints to download bulk data
