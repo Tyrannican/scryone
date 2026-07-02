@@ -44,6 +44,11 @@ impl ScryfallClient {
         Self { inner: client, rt }
     }
 
+    /// Call a generic endpoint and returns the raw bytes of the response
+    pub fn call_raw(&self, url: impl IntoUrl) -> Result<Vec<u8>, ScryfallApiError> {
+        self.rt.block_on(self.inner.call_raw(url))
+    }
+
     /// Call a generic endpoint that has response type `T`
     ///
     /// This is useful for download endpoints to download bulk data
