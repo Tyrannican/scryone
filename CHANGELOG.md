@@ -1,3 +1,10 @@
+# 0.2.0
+
+* The field `download_uri` on bulk data is now Deprecated and will be removed at a later date
+    * It is now returned as an `Option<Url>` instead of a `Url` to allow for it to be silently ignored
+* Added a new `call_raw` method to the API clients to allow for objtaining the raw bytes of a request
+    * This is support the new `jsonl_download_uri` which is returned as an array of GZipped data which needs to be manually decoded.
+
 # 0.1.1
 
 * Added a fix for Mana Cost serialisations for `Card` objects

@@ -29,8 +29,11 @@ pub struct BulkData {
     /// Description for the file
     pub description: String,
 
+    /// URI that hosts the file for fetching (DEPRECATED)
+    pub download_uri: Option<Url>,
+
     /// URI that hosts the file for fetching
-    pub download_uri: Url,
+    pub jsonl_download_uri: Url,
 
     /// Timestamp for when the file was last updated
     pub updated_at: Timestamp,

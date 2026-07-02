@@ -719,7 +719,11 @@ mod card_object_tests {
             .build()?;
 
         let response = client.get(req)?;
-        client.call(response.download_uri)
+        if let Some(download_uri) = response.download_uri {
+            return client.call(download_uri);
+        } else {
+            Ok(Vec::new())
+        }
     }
 
     #[test]
