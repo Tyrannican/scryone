@@ -48,6 +48,7 @@ mod object_deserialisation_tests {
       "description": "A JSON file containing one Scryfall card object for each Oracle ID on Scryfall. The chosen sets for the cards are an attempt to return the most up-to-date recognizable version of the card.",
       "size": 173116018,
       "download_uri": "https://data.scryfall.io/oracle-cards/oracle-cards-20260523090254.json",
+      "jsonl_download_uri": "https://data.scryfall.io/oracle-cards/oracle-cards-20260523090254.gz",
       "content_type": "application/json",
       "content_encoding": "gzip"
     }"#;
