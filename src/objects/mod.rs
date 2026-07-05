@@ -5,6 +5,7 @@ pub mod catalog;
 pub mod cost;
 pub mod error;
 pub mod list;
+pub mod manifest;
 pub mod migration;
 pub mod ruling;
 pub mod set;
