@@ -13,6 +13,7 @@ use crate::{
         card::{Card, CardIdentifier},
         catalog::Catalog,
         list::List,
+        manifest::{CardManifest, CardManifestSortOrder},
         types::Language,
     },
 };
@@ -894,6 +895,95 @@ impl CardFromIdRequestBuilder {
             version: self.version,
             pretty: self.pretty,
         })
+    }
+}
+
+/// Request type for the `/cards/manifest` Scryfall endpoint
+///
+/// Returns a [`List`] describing Scryfall's current [`Card`] offerings. THe list includes
+/// efficient information about each Card so you can compare it with your downstream system or sync
+/// process
+///
+/// Returns 15,000 entries per page. Limited sorting and filtering options are available for
+/// performance reasons.
+#[derive(Debug, Clone)]
+pub struct CardManifestRequest {
+    language: Option<Language>,
+    order: Option<CardManifestSortOrder>,
+    page: Option<u32>,
+}
+
+impl CardManifestRequest {
+    /// Constructs the builder for a `CardManifestRequest`
+    pub fn builder() -> CardManifestRequestBuilder {
+        CardManifestRequestBuilder::new()
+    }
+}
+
+impl ScryfallRequest for CardManifestRequest {
+    type Response = List<Vec<CardManifest>>;
+
+    fn to_url(&self) -> Result<Url, ScryfallApiError> {
+        let mut url = Url::parse(BASE_URL)?;
+        url = url.join("/cards/manifest")?;
+
+        add_query_pair!(url, &self.language, "lang");
+        add_query_pair!(url, &self.order, "order");
+        add_query_pair!(url, &self.page, "page");
+
+        Ok(url)
+    }
+}
+
+/// Builder for constructing a [`CardManifestRequest`]
+#[derive(Debug, Default)]
+pub struct CardManifestRequestBuilder {
+    order: CardManifestSortOrder,
+    language: Option<Language>,
+    page: Option<u32>,
+}
+
+impl CardManifestRequestBuilder {
+    /// Constructs a new `CardManifestRequestBuilder`
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Sets the `lang` parameter for the request
+    pub fn language(mut self, lang: Language) -> Self {
+        self.language = Some(lang);
+        self
+    }
+
+    /// Sets the ordering of the returned results
+    ///
+    /// Can be:
+    /// * [`CardManifestSortOrder::Released`]
+    /// * [`CardManifestSortOrder::ImageUpdated`]
+    pub fn order(mut self, order: CardManifestSortOrder) -> Self {
+        self.order = order;
+        self
+    }
+
+    /// Sets the `page` parameter to return the requested page
+    pub fn page(mut self, page: u32) -> Self {
+        self.page = Some(page);
+        self
+    }
+
+    /// Builds the [`CardManifestRequest`]
+    pub fn build(self) -> CardManifestRequest {
+        let language = if let Some(lang) = self.language {
+            lang
+        } else {
+            Language::English
+        };
+
+        CardManifestRequest {
+            language: Some(language),
+            order: Some(self.order),
+            page: self.page,
+        }
     }
 }
 

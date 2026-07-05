@@ -36,12 +36,14 @@ pub struct CardManifest {
 
 /// Sort order for a list of [`CardManifest`] objects
 /// The direction is always descending
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub enum CardManifestSortOrder {
     /// Sort card by their release date: Newest -> Oldest
+    #[default]
     Released,
 
     /// Sort card by their last image update: Most recent -> Least recent
+    #[serde(rename = "imageupdated")]
     ImageUpdated,
 }
 
