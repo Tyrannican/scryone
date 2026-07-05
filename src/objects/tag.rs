@@ -9,9 +9,10 @@ use uuid::Uuid;
 /// There are two types of tags:
 ///
 /// * Art Tags (type `illustration`): Describes what is depicted in a card's artwork (e.g.
-/// creatures, settings, etc).
+///   creatures, settings, etc).
+///
 /// * Oracle Tags (type `oracle`): Describes the functional role of a card, such as removal, ramp,
-/// or draw
+///   or draw
 ///
 /// These tags are both sourced from the community-maintained [Tagger Project](https://tagger.scryfall.com/).
 ///

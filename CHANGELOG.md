@@ -1,3 +1,8 @@
+# 0.2.1
+
+* Added support for the `/cards/manifest` endpoint on Scryfall (types and Request objects)
+* Added support for `Tag` objects which can be retrieved in Bulk Data requests
+
 # 0.2.0
 
 * The field `download_uri` on bulk data is now Deprecated and will be removed at a later date
