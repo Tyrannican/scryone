@@ -1281,6 +1281,12 @@ pub enum BulkDataType {
 
     /// Only the rulings for cards
     Rulings,
+
+    /// All Art (illustration) tags sourced from Tagger, the Scryfall community tagging project,
+    ArtTags,
+
+    /// ALl Oracle tags sourced from Tagger, the Scryfall community tagging project
+    OracleTags,
 }
 
 impl std::fmt::Display for BulkDataType {
@@ -1291,6 +1297,8 @@ impl std::fmt::Display for BulkDataType {
             Self::DefaultCards => write!(f, "default_cards"),
             Self::AllCards => write!(f, "all_cards"),
             Self::Rulings => write!(f, "rulings"),
+            Self::ArtTags => write!(f, "art_tags"),
+            Self::OracleTags => write!(f, "oracle_tags"),
         }
     }
 }

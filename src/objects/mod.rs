@@ -10,6 +10,7 @@ pub mod migration;
 pub mod ruling;
 pub mod set;
 pub mod symbol;
+pub mod tag;
 pub mod types;
 
 pub use bulk::*;
@@ -22,6 +23,7 @@ pub use migration::*;
 pub use ruling::*;
 pub use set::*;
 pub use symbol::*;
+pub use tag::*;
 pub use types::*;
 
 #[cfg(test)]
