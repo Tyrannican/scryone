@@ -12,7 +12,7 @@ use serde::de::DeserializeOwned;
 
 use crate::{api::request::PaginatedRequest, objects::error::ScryfallError};
 
-const SCRYFALL_USER_AGENT: &str = "scryone/0.2.1";
+const SCRYFALL_USER_AGENT: &str = "scryone/0.2.2";
 const ACCEPT_HEADER: &str = "application/json;q=0.9,*/*;q=0.8";
 
 /// Scryfall API Asynchronous Client
