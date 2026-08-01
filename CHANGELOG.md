@@ -1,3 +1,8 @@
+# 0.2.2
+
+* Added support for the new Image formats
+    * These are the currently supported formats but in Webpack
+
 # 0.2.1
 
 * Added support for the `/cards/manifest` endpoint on Scryfall (types and Request objects)
