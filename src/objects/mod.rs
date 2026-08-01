@@ -168,7 +168,12 @@ mod object_deserialisation_tests {
         "large": "https://cards.scryfall.io/large/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.jpg?1764119522",
         "png": "https://cards.scryfall.io/png/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.png?1764119522",
         "art_crop": "https://cards.scryfall.io/art_crop/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.jpg?1764119522",
-        "border_crop": "https://cards.scryfall.io/border_crop/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.jpg?1764119522"
+        "border_crop": "https://cards.scryfall.io/border_crop/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.jpg?1764119522",
+        "thumb": "https://cards.scryfall.io/small/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.jpg?1764119522",
+        "grid": "https://cards.scryfall.io/normal/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.jpg?1764119522",
+        "display": "https://cards.scryfall.io/large/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.jpg?1764119522",
+        "crop": "https://cards.scryfall.io/png/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.png?1764119522",
+        "art": "https://cards.scryfall.io/art_crop/front/0/d/0dbb9439-6a4c-482a-83e7-5d6aa80d0cbd.jpg?1764119522"
       },
       "mana_cost": "{W}",
       "cmc": 1,

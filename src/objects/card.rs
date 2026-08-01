@@ -569,23 +569,39 @@ pub struct Legality {
 /// Collection of Image URIs for different Image sizes / formats
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Image {
-    /// Card in PNG format
+    /// Card in PNG format (744x1040)
     pub png: Url,
 
-    /// Card without the Border
+    /// Card without the Border (480x680)
     pub border_crop: Url,
 
-    /// Card with just the Artwork
+    /// Card with just the Artwork (variable size)
     pub art_crop: Url,
 
-    /// Card in its large size
+    /// Card in its large size (672x936)
     pub large: Url,
 
-    /// Card in its normal size
+    /// Card in its normal size (488x680)
     pub normal: Url,
 
-    /// Card in its small size
+    /// Card in its small size (146x204)
     pub small: Url,
+
+    /// A small thumbnail of the card image, replaces `small` (146x204)
+    pub thumb: Url,
+
+    /// A medium-sized full card image, replaces `normal` (488x680)
+    pub grid: Url,
+
+    /// A large full card image, replaces `large` (672x936)
+    pub display: Url,
+
+    /// A full card image with the rounded corners and the majority of the border cropped off,
+    /// replaces `border_crop` (480x680)
+    pub crop: Url,
+
+    /// A rectagular crop of the card's art only, replaces `art_crop` (626x457)
+    pub art: Url,
 }
 
 /// Price information for a given Card
