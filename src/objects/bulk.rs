@@ -39,11 +39,11 @@ pub struct BulkData {
     pub updated_at: Timestamp,
 
     /// Size of the file in bytes
-    pub size: usize,
+    pub size: Option<usize>,
 
     /// MIME-type of the file
-    pub content_type: String,
+    pub content_type: Option<String>,
 
     /// Encoding that is used to transmit the file when it is downloaded
-    pub content_encoding: String,
+    pub content_encoding: Option<String>,
 }

@@ -727,6 +727,8 @@ mod card_object_tests {
         request::{BulkDataFromIdRequest, BulkDataId},
     };
     use crate::objects::{BulkDataType, Card};
+    use flate2::read::GzDecoder;
+    use std::io::Read;
 
     fn bulk_data_download(bdt: BulkDataType) -> Result<Vec<Card>, ScryfallApiError> {
         let client = ScryfallClient::new();
@@ -735,11 +737,25 @@ mod card_object_tests {
             .build()?;
 
         let response = client.get(req)?;
-        if let Some(download_uri) = response.download_uri {
-            return client.call(download_uri);
-        } else {
-            Ok(Vec::new())
-        }
+        let uri = response.jsonl_download_uri;
+        let bulk = client.call_raw(uri)?;
+        let mut raw_cards = Vec::new();
+        let mut decoder = GzDecoder::new(&bulk[..]);
+        let decoded = decoder.read_to_end(&mut raw_cards);
+        assert!(decoded.is_ok());
+
+        let cards: Vec<Card> = raw_cards
+            .split(|b| *b == b'\n')
+            .filter_map(|arr| {
+                if arr.is_empty() {
+                    return None;
+                }
+
+                Some(serde_json::from_slice(arr).expect("card should be valid"))
+            })
+            .collect();
+
+        Ok(cards)
     }
 
     #[test]

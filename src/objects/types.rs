@@ -696,6 +696,9 @@ pub enum FrameEffect {
 
     /// Full art frame
     FullArt,
+
+    /// Borderless Frame
+    Borderless,
 }
 
 impl std::fmt::Display for FrameEffect {
@@ -728,6 +731,7 @@ impl std::fmt::Display for FrameEffect {
             Self::UpsideDownDfc => write!(f, "upsidedowndfc"),
             Self::Spree => write!(f, "spree"),
             Self::FullArt => write!(f, "fullart"),
+            Self::Borderless => write!(f, "borderless"),
         }
     }
 }
@@ -911,6 +915,12 @@ pub enum Language {
     /// Used on special Lord of the Rings and The Hobbit cards
     #[serde(rename = "qya")]
     Quenya,
+
+    /// Dwarven language (Hobbit)
+    ///
+    /// Used on special Lord of the Rings and Hobbit cards
+    #[serde(rename = "dw")]
+    Dwarven,
 }
 
 impl std::fmt::Display for Language {
@@ -934,6 +944,7 @@ impl std::fmt::Display for Language {
             Self::Sanskrit => write!(f, "sa"),
             Self::Phyrexian => write!(f, "ph"),
             Self::Quenya => write!(f, "qya"),
+            Self::Dwarven => write!(f, "dw"),
         }
     }
 }
