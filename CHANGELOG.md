@@ -1,4 +1,11 @@
-# 0.2.2
+# 0.2.3
+
+* Added new missing fields added from the Hobbit set
+    * Borderless frame
+    * Dwarven language
+* Made some fields optional on Bulk Data sets
+
+# 0.2.2 [YANKED]
 
 * Added support for the new Image formats
     * These are the currently supported formats but in Webpack
