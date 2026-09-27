@@ -1,3 +1,7 @@
+# 0.2.4
+
+* Added `front_card` Card Layout
+
 # 0.2.3
 
 * Added new missing fields added from the Hobbit set

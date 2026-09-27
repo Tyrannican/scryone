@@ -1027,6 +1027,9 @@ pub enum Layout {
 
     /// Card with two sides that are unrelated
     ReversibleCard,
+
+    /// Extra card that indicates a deck type
+    FrontCard,
 }
 
 impl std::fmt::Display for Layout {
@@ -1057,6 +1060,7 @@ impl std::fmt::Display for Layout {
             Self::Host => write!(f, "host"),
             Self::ArtSeries => write!(f, "art_series"),
             Self::ReversibleCard => write!(f, "reversible_card"),
+            Self::FrontCard => write!(f, "front_card"),
         }
     }
 }
