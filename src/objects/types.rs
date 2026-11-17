@@ -699,6 +699,9 @@ pub enum FrameEffect {
 
     /// Borderless Frame
     Borderless,
+
+    /// Translucent Frame
+    Translucent,
 }
 
 impl std::fmt::Display for FrameEffect {
@@ -732,6 +735,7 @@ impl std::fmt::Display for FrameEffect {
             Self::Spree => write!(f, "spree"),
             Self::FullArt => write!(f, "fullart"),
             Self::Borderless => write!(f, "borderless"),
+            Self::Translucent => write!(f, "translucent"),
         }
     }
 }
